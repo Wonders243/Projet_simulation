@@ -108,10 +108,10 @@ model.fit(X, y, epochs=10, batch_size=32, validation_split=0.2)
 
 # Sauvegarde du modèle et des encodeurs
 model.save("animal_decision_model1.h5")
-scaler_filename = "scaler.pkl"
-encoder_animal_filename = "encoder_animal.pkl"
-encoder_climat_filename = "encoder_climat.pkl"
-encoder_decision_filename = "encoder_decision.pkl"
+scaler_filename = "/workspaces/Projet_simulation/simulation/model_IA/scaler.pkl"
+encoder_animal_filename = "/workspaces/Projet_simulation/simulation/model_IA/encoder_animal.pkl"
+encoder_climat_filename = "/workspaces/Projet_simulation/simulation/model_IA/encoder_climat.pkl"
+encoder_decision_filename = "/workspaces/Projet_simulation/simulation/model_IA/encoder_decision.pkl"
 
 # Sauvegarder les encodeurs
 import pickle

@@ -15,11 +15,11 @@ import pickle
 
 
 # Chemins vers les fichiers sauvegardés
-model_path = "/workspaces/project-L3-unimes/animal_decision_model.h5"
-scaler_path = "/workspaces/project-L3-unimes/scaler.pkl"
-encoder_animal_path = "/workspaces/project-L3-unimes/encoder_animal.pkl"
-encoder_climat_path = "/workspaces/project-L3-unimes/encoder_climat.pkl"
-encoder_decision_path = "/workspaces/project-L3-unimes/encoder_decision.pkl"
+model_path = "/workspaces/Projet_simulation/simulation/model_IA/animal_decision_model1.h5"
+scaler_path = "/workspaces/Projet_simulation/simulation/model_IA/scaler.pkl"
+encoder_animal_path = "/workspaces/Projet_simulation/simulation/model_IA/encoder_animal.pkl"
+encoder_climat_path = "/workspaces/Projet_simulation/simulation/model_IA/encoder_climat.pkl"
+encoder_decision_path = "/workspaces/Projet_simulation/simulation/model_IA/encoder_decision.pkl"
 
 # Charger le modèle
 model = keras.models.load_model(model_path)
@@ -173,6 +173,7 @@ class Simulation (AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
         asyncio.create_task(self.demarrer())
+
     async def disconnect(self, close_code):
         print(f"Déconnexion WebSocket, code : {close_code}")
         self.running = False  # Si tu utilises une boucle, ça permet de l’arrêter proprement
@@ -205,7 +206,6 @@ class Simulation (AsyncWebsocketConsumer):
             donnees=self.recuperer_donnees_animaux()
             actions= self.animal_Action(donnees)
             print(actions)
-            
             await self.envoyer_donnees()
             time.sleep(self.tick_duree)  # Pause de 50ms entre chaque tick
      
