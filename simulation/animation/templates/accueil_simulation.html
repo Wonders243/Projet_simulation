@@ -411,7 +411,10 @@
 
                 const socket = new WebSocket('wss://orange-system-v6rjvrq96ww926qq.github.dev/ws/animals/');
 
-
+                ws.onopen = function(event) {
+                console.log('Connexion WebSocket ouverte !');
+                ws.send(JSON.stringify({ 'message': 'Bonjour du client WebSocket' }));
+                };
                 socket.onmessage = (event) => {
                     animals = JSON.parse(event.data);
                 };

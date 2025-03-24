@@ -1,4 +1,4 @@
-import time
+
 import random
 import json
 import math
@@ -171,14 +171,29 @@ class Simulation (AsyncWebsocketConsumer):
         ])
 
         return df
-
     async def connect(self):
-        await self.accept()
-        asyncio.create_task(self.demarrer())
+            # Lors de la connexion, accepter la connexion WebSocket
+            self.room_name = "animals"
+            self.room_group_name = f"ws_{self.room_name}"
+
+            # Rejoindre un groupe WebSocket
+            await self.channel_layer.group_add(
+                self.room_group_name,
+                self.channel_name
+            )
+
+            # Accepter la connexion WebSocket
+            await self.accept()
+            asyncio.create_task(self.demarrer())
+
 
     async def disconnect(self, close_code):
-        print(f"Déconnexion WebSocket, code : {close_code}")
-        self.running = False  # Si tu utilises une boucle, ça permet de l’arrêter proprement
+        # Quitter le groupe WebSocket
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+    
     async def envoyer_donnees(self):
         """
         Envoie l'état actuel de la simulation au client WebSocket.
@@ -199,7 +214,7 @@ class Simulation (AsyncWebsocketConsumer):
             "climat": self.climat,
             "animaux": donnees_liste,
         }
-       # await self.send(text_data=json.dumps(message))  # Envoi des données JSON au frontend
+        await self.send(text_data=json.dumps(message))  # Envoi des données JSON au frontend
 
     async def demarrer(self):
        

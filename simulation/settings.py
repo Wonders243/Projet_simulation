@@ -23,8 +23,7 @@ SECRET_KEY = 'django-insecure-=v)x=cpc$^80t#!k^4egj^g5q95%2s=w+6-f7q%++dnh&kj$m7
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["orange-system-v6rjvrq96ww926qq.github.dev", "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -71,12 +70,35 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'simulation.wsgi.application'
-ASGI_APPLICATION = "simulation.asgi.application"
+ASGI_APPLICATION = "simulation.asgi.application"  # Remplace 'simulation' par le nom de ton projet
 
-# Configuration de WebSockets en mémoire (dev)
+# Utilisation de InMemoryChannelLayer pour les WebSockets locaux
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # Utilisation de l'InMemoryChannelLayer pour un développement local
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'channels': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
 
