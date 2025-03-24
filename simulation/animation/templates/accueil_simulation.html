@@ -409,13 +409,20 @@
 
                 let animals = [];
 
-                const socket = new WebSocket("wss://studious-guacamole-4jvp7vw5jvr4fq7jw-8000.app.github.dev/ws/animals/");
+                const socket = new WebSocket('wss://orange-system-v6rjvrq96ww926qq.github.dev/ws/animals/');
 
 
                 socket.onmessage = (event) => {
                     animals = JSON.parse(event.data);
                 };
+                                
+                socket.onclose = function(event) {
+                    console.log('WebSocket est fermé.', event);
+                };
 
+                socket.onerror = function(error) {
+                    console.error('Erreur WebSocket:', error);
+                };
                 function drawArrow(x, y, dx, dy, color) {
                     const angle = Math.atan2(dy, dx);  // Angle correct pour le mouvement
                     ctx.save();

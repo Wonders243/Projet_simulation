@@ -66,13 +66,15 @@ class Simulation (AsyncWebsocketConsumer):
     def initialiser_animaux(self):
         """ Initialise quelques animaux dans la simulation. """
         # Ajouter des animaux à la simulation avec leurs caractéristiques
-        self.animaux.append(Animal("lapin", x=100, y=200, age=2, poids=3, energie=80, faim=99, soif=30))
-        self.animaux.append(Animal("ours", x=300, y=500, age=5, poids=150, energie=90, faim=80, soif=40))
-        self.animaux.append(Animal("lion", x=600, y=400, age=4, poids=120, energie=85, faim=60, soif=50))
-        self.animaux.append(Animal("lion", x=600, y=400, age=4, poids=120, energie=85, faim=60, soif=50))
-        self.animaux.append(Animal("lion", x=600, y=400, age=4, poids=120, energie=85, faim=60, soif=50))
-        self.animaux.append(Animal("lion", x=600, y=400, age=4, poids=120, energie=85, faim=60, soif=50))
-        self.animaux.append(Animal("lion", x=600, y=400, age=4, poids=120, energie=85, faim=60, soif=50))
+        animaux_types = ["lapin", "ours", "lion"]
+        for _ in range(10):
+            type_animal = random.choice(animaux_types)
+            age = random.randint(1, 10)
+            poids = random.randint(10, 150)
+            energie = random.randint(50, 100)
+            faim = random.randint(0, 100)
+            soif = random.randint(0, 100)
+            self.animaux.append(Animal(type_animal, x=random.randint(0, 800), y=random.randint(0, 600), age=age, poids=poids, energie=energie, faim=faim, soif=soif))
 
     def animal_Action(self, test_data):
 
@@ -197,7 +199,7 @@ class Simulation (AsyncWebsocketConsumer):
             "climat": self.climat,
             "animaux": donnees_liste,
         }
-        await self.send(text_data=json.dumps(message))  # Envoi des données JSON au frontend
+       # await self.send(text_data=json.dumps(message))  # Envoi des données JSON au frontend
 
     async def demarrer(self):
        
@@ -207,7 +209,7 @@ class Simulation (AsyncWebsocketConsumer):
             actions= self.animal_Action(donnees)
             print(actions)
             await self.envoyer_donnees()
-            time.sleep(self.tick_duree)  # Pause de 50ms entre chaque tick
+            await asyncio.sleep(self.tick_duree)  # Pause de 50ms entre chaque tick
      
     
 
@@ -363,4 +365,8 @@ class Animal:
         return
     def explorer():
         return
-    
+
+#simulation = Simulation()
+
+# Démarre la simulation manuellement
+#asyncio.run(simulation.demarrer())
