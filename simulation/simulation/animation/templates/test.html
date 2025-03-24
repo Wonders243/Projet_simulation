@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Animaux</title>
+    <style>
+        body { margin: 0; background: black; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+<script>
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 800;
+    canvas.height = 600;
+    
+    let animals = [];
+    
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws/animals/");
+    socket.onmessage = (event) => {
+        animals = JSON.parse(event.data);
+    };
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let animal of animals) {
+            ctx.fillStyle = animal.color;
+            ctx.beginPath();
+            ctx.arc(animal.x, animal.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        requestAnimationFrame(draw);
+    }
+    draw();
+</script>
+
+</body>
+</html>

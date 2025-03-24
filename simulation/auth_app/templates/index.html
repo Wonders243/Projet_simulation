@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur</title>
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Utilisation de Tailwind CSS -->
+    <style>
+        /* Animation fluide pour le carrousel */
+        .fade {
+            animation: fadeEffect 1s ease-in-out;
+        }
+        @keyframes fadeEffect {
+            from { opacity: 0.4; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- En-tête fixe avec le logo -->
+    <header class="fixed top-0 left-0 w-full flex justify-between items-center p-4 bg-gray-800 bg-opacity-90 shadow-md backdrop-blur">
+        <img src="C:\Users\larja\Desktop\project_fin_licence\simulation\TEMPLATES\R_M.webp" alt="Logo" class="h-10"> <!-- Logo en haut à gauche -->
+        <h1 class="text-2xl font-bold">Simulateur</h1> <!-- Titre au centre -->
+        <div class="flex space-x-4"> <!-- Liens d'inscription et connexion -->
+            <a href="{% url 'inscription' %}" class="text-white hover:text-gray-300">Inscription</a>
+            <a href="{% url 'connexion' %}" class="text-white hover:text-gray-300">Connexion</a>
+        </div>
+    </header>
+
+    <!-- Contenu principal avec informations -->
+    <main class="flex flex-col items-center justify-center min-h-screen px-6 space-y-6 pt-24">
+        <h2 class="text-2xl font-semibold">Bienvenue sur le simulateur !</h2>
+        <p class="text-center max-w-2xl">Le simulateur est une plateforme interactive où vous pouvez observer et influencer un écosystème dynamique en temps réel. Prenez des décisions, surveillez l'évolution et apprenez comment les interactions affectent la survie des espèces.</p>
+        <ul class="list-disc text-left max-w-2xl space-y-2">
+            <li>Créer et gérer un environnement virtuel.</li>
+            <li>Observer les comportements des espèces.</li>
+            <li>Prendre des décisions impactant la simulation.</li>
+            <li>Accumuler des points selon l'impact de vos décisions.</li>
+            <li>Apprendre les principes fondamentaux des écosystèmes.</li>
+        </ul>
+        <p class="text-lg font-semibold">Inscrivez-vous ou connectez-vous pour accéder au simulateur !</p>
+        
+        <a href="{% url 'connexion'%}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Commencer la simulation</a>
+
+        <!-- Carrousel d'images de la simulation -->
+        <div class="w-3/4 max-w-lg overflow-hidden rounded-lg shadow-lg mt-6">
+            <div class="relative w-full h-64">
+                <img id="carousel-image" src="screenshot1.png" alt="Capture d'écran de la simulation" class="w-full h-full object-cover fade">
+            </div>
+        </div>
+    </main>
+
+    <!-- Pied de page avec les informations importantes -->
+    <footer class="bg-gray-800 text-center p-4 w-full mt-6">
+        <p>© 2025 Simulateur - Tous droits réservés</p>
+        <p>Contact : <a href="mailto:contact@simulateur.com" class="text-blue-400 hover:underline">contact@simulateur.com</a></p>
+        <p>Mentions légales | Politique de confidentialité</p>
+    </footer>
+
+    <script>
+        // Script pour le défilement des images avec effet de fondu
+        const images = ["screenshot1.png", "screenshot2.png", "screenshot3.png"];
+        let currentIndex = 0;
+        
+        function changeImage() {
+            const imageElement = document.getElementById("carousel-image");
+            imageElement.classList.remove("fade");
+            setTimeout(() => {
+                currentIndex = (currentIndex + 1) % images.length;
+                imageElement.src = images[currentIndex];
+                imageElement.classList.add("fade");
+            }, 100);
+        }
+        setInterval(changeImage, 3000); // Change l'image toutes les 3 secondes
+    </script>
+</body>
+</html>

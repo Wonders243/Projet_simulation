@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <!-- Métadonnées du document -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tableau de Bord - Simulateur</title>
+        
+        <!-- Inclusion de Tailwind CSS pour le style -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            /* Personnalisation de la barre de défilement */
+            #prompt-input::-webkit-scrollbar {
+                width: 10px;
+                height: 80%;
+            }
+
+            #prompt-input::-webkit-scrollbar-thumb {
+                background-color: #4a4a4a;
+                border-radius: 10px;
+                
+            }
+
+            #prompt-input::-webkit-scrollbar-track {
+                background-color: #2d2d2d;
+                
+            }
+
+            /* Style du textarea */
+            #prompt-input {
+                width: 100%;
+                padding: 12px;
+                background-color: #2d2d2d;
+                color: white;
+                border-radius: 12px;
+                font-size: 16px;
+                resize: none;
+                border: 1px solid #444;
+                transition: border-color 0.5s ease-in-out;
+            }
+
+            #prompt-input:focus {
+                outline: none;
+                border-color: #2563eb;
+            }
+
+            /* Style pour l'historique des événements */
+            #historique {
+                max-height: 300px;
+                overflow-y: auto;
+                padding-right: 8px;
+                background-color: #333;
+                border-radius: 12px;
+            }
+
+            /* Bouton d'envoi avec animation au survol */
+            .send-button {
+                background-color: #646460ea;
+                color: white;
+                font-weight: bold;
+                padding: 12px 24px;
+                border-radius: 12px;
+                cursor: pointer;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+                margin-top: 12px;
+                width: 100%;
+            }
+
+            .send-button:hover {
+                background-color: #cccccc9f;
+                transform: translateY(-2px);
+            }
+
+            .send-button:active {
+                transform: translateY(0);
+            }
+
+            /* Zone de contenu avec marges */
+            .content-zone {
+                padding: 20px;
+                background-color: #1a202c;
+                border-radius: 12px;
+            }
+
+            /* Section de la simulation */
+            #simulation-container {
+                width: 100%;
+                height: 80vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #333;
+                border-radius: 12px;
+                position: relative;
+            }
+
+            canvas {
+                width: 90%;
+                height: 90%;
+                display: block;
+                border-radius: 1px;
+                border-color: #ffffff;
+            }
+
+            /* Pied de page */
+            footer {
+                background-color: #2d2d2d;
+                padding: 10px;
+                text-align: center;
+                border-top: 1px solid #444;
+            }
+
+            footer a {
+                color: #2563eb;
+            }
+
+            footer a:hover {
+                text-decoration: underline;
+            }
+
+            /* Styles responsives */
+            @media (max-width: 1024px) {
+                .flex-1 {
+                    flex: 1;
+                }
+
+                .ml-1-3 {
+                    margin-left: 0;
+                }
+
+                #simulation-container {
+                    height: 80%
+                }
+
+                .send-button {
+                    width: auto;
+                }
+            }
+
+            @media (max-width: 640px) {
+                header {
+                    padding: 10px;
+                }
+
+                #simulation-container {
+                    height: 80%;
+                    width: 100%
+                }
+                .content-zone {
+                    padding: 5px;
+                    
+                }
+
+                .send-button {
+                    padding: 5px 16px;
+                }
+            }
+
+
+            /* Style pour le menu burger */
+            .menu-burger {
+                display: none;
+            }
+            .dropdown-menu {
+                display: none; 
+            }
+
+            @media (max-width: 768px) {
+                .menu-burger {
+                    display: block;
+                    cursor: pointer;
+                    font-size: 24px;
+                    color: white;
+                }
+
+                .dropdown-menu {
+                    display: none;
+                    position: absolute;
+                    top: 60px;
+                    right: 0;
+                    background-color: #1a202c;
+                    border-radius: 10px;
+                    padding: 12px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                    z-index: 999; 
+                }
+
+                .dropdown-menu a {
+                    display: block;
+                    padding: 10px;
+                    color: white;
+                    text-decoration: none;
+                }
+
+                .dropdown-menu a:hover {
+                    background-color: #434e66;
+                }
+
+                .show {
+                    display: block;
+                }
+            }
+
+            
+            header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000; 
+            }
+
+            .dropdown-menu {
+                position: fixed;
+                top: 60px;
+                right: 0;
+                width: 200px;
+                background-color: #2d2d2d;
+                border-radius: 8px;
+                padding: 6px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            .content-wrapper {
+                padding-top: 72px; /* Pour éviter que le contenu soit caché par le header */
+                
+            }
+            #simulationCanvas {
+                width: 90%; /* Remplit presque tout le div parent */
+                height: 90%;
+            }
+        </style>
+    </head>
+    <body class="bg-gray-900 text-white flex flex-col">
+        
+        <!-- En-tête fixe -->
+        <header class="flex justify-between items-center p-4 bg-gray-800 bg-opacity-40 shadow-md backdrop-blur z-10 rounded-b-lg">
+            <!-- Logo -->
+            <img src="logo.png" alt="Logo" class="h-10">
+            
+            <!-- Titre principal -->
+            <h1 class="text-2xl font-semibold">Tableau de Bord</h1>
+            
+            <!-- Icône du menu burger -->
+            <div class="menu-burger" onclick="toggleMenu()">☰</div>
+            
+            <!-- Menu de navigation pour les grands écrans -->
+            <div class="hidden md:flex items-center space-x-4">
+                <span class="text-white">Bienvenue, <strong>{{user.username}}</strong></span>
+                <div class="text-white flex space-x-6">
+                    <span>Points: 150</span> <!-- Points liés à la simulation -->
+                    <span>Pouvoir: 75</span> <!-- Pouvoir lié à la simulation -->
+                    <a href="#" class="hover:text-gray-300">Notifications</a>
+                    <a href="#" class="hover:text-gray-300">Réglages</a>
+                    <a href="#" class="hover:text-gray-300">Profil</a>
+                    <a href="{% url 'deconnexion' %}" class="hover:text-gray-300">Déconnexion</a>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Menu déroulant (burger) -->
+        <div class="dropdown-menu" id="dropdown-menu">
+            <a href="#">Notifications</a>
+            <a href="#">Réglages</a>
+            <a href="#">Profil</a>
+            <a href="{% url 'deconnexion' %}">Déconnexion</a>
+        </div>
+
+        <!-- Zone de contenu, ajout d'un padding pour compenser l'en-tête fixe -->
+        <div class="content-wrapper flex flex-1">
+            <aside class="w-[15vw] min-w-[200px] h-screen bg-gray-800 p-4 flex flex-col space-y-4">
+                <h3 class="text-lg font-semibold mb-3 text-gray-300">Influencez la Simulation</h3>
+                    
+                <!-- Zone de saisie pour les prompts -->
+                <div class="relative w-full">
+                    <textarea id="prompt-input" class="w-full h-36 bg-gray-700 text-white rounded-lg p-2" 
+                            placeholder="Écrivez un prompt ici..." oninput="resizeTextarea()"></textarea>
+            
+                    <!-- Bouton d'envoi discret en bas à droite -->
+                    <button class="absolute bottom-2 right-2 bg-gray-600 bg-opacity-50 text-gray-300 text-xs p-1 rounded-full hover:bg-opacity-75 transition">
+                        ➤
+                    </button>
+                </div>
+            
+                <!-- Historique des événements -->
+                <div class="mt-4 flex-1 overflow-y-hidden overflow-x-hidden">
+                    <h3 class="text-lg font-semibold mb-3 text-gray-300">Historique des Événements</h3>
+                    <div id="historique" class="h-full text-gray-300 p-3 rounded-lg">
+                        <p class="text-gray-400">(Les événements récents apparaîtront ici)</p>
+                    </div>
+                </div>
+            </aside>
+            
+            <!-- Espace de simulation -->
+            <main class="flex-1 sm:ml-1/3 flex flex-col items-center justify-center min-h-screen px-6 space-y-6">
+                <h2 class="text-2xl font-semibold">Simulation</h2>
+                
+                <!-- Section de la simulation -->
+                <div id="simulation-container" class="w-full h-screen bg-gray-800 p-6 rounded-lg shadow-lg relative">
+                    <canvas class="canvas" id="canvas"> </canvas>
+                    <!-- Bouton plein écran -->
+                    <button class="absolute bottom-2 right-2 text-gray-400 bg-gray-700 bg-opacity-75 text-sm px-2 py-1 rounded hover:bg-gray-600 transition" 
+                            onclick="toggleFullscreen()">
+                        ⛶
+                    </button>
+
+                    <!-- Affichage d'un point -->
+                    <div id="point" class="absolute bg-red-500 rounded-full" style="width: 10px; height: 10px; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- Pied de page -->
+        <footer>
+            <p>© 2025 Simulateur - Tous droits réservés</p>
+            <p>Contact : <a href="mailto:contact@simulateur.com">contact@simulateur.com</a></p>
+        </footer>
+
+        <script>
+            function resizeTextarea() {
+                const textarea = document.getElementById("prompt-input");
+                const temp=textarea.style.height;
+                if (textarea.scrollHeight > textarea.clientHeight && textarea.scrollHeight <200) {
+                    textarea.style.height = `${textarea.scrollHeight}px`; // Définit la hauteur à celle du contenu
+                }else if(textarea.scrollHeight < textarea.clientHeight && textarea.clientHeight>150){
+                    textarea.style.height = `${textarea.scrollHeight}px`;
+                }
+            }
+
+            // Fonction pour afficher/masquer le menu burger
+            function toggleMenu() {
+                const menu = document.getElementById('dropdown-menu');
+                const isMenuVisible = menu.classList.contains('show');
+
+                // Masquer le menu si visible, sinon afficher
+                if (isMenuVisible) {
+                    menu.classList.remove('show');
+                } else {
+                    menu.classList.add('show');
+                }
+            }
+
+            // Fonction pour fermer le menu si un clic se fait en dehors
+            document.addEventListener('click', function(event) {
+                const menu = document.getElementById('dropdown-menu');
+                const burgerIcon = document.querySelector('.menu-burger');
+                if (!menu.contains(event.target) && !burgerIcon.contains(event.target)) {
+                    menu.classList.remove('show');
+                }
+            });
+
+            // Fonction pour activer/désactiver le plein écran
+            function toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            }
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+
+                let offsetX = 0, offsetY = 0;  // Décalage de la caméra
+                let zoom = 1;  // Niveau de zoom
+                let isDragging = false;  // Détection si l'utilisateur fait glisser la souris
+
+                // Fonction pour mettre à jour la position de la caméra
+                function updateCameraPosition(event) {
+                    if (isDragging) {
+                        const dx = event.movementX;
+                        const dy = event.movementY;
+                        offsetX += dx;
+                        offsetY += dy;
+                        draw();  // Redessiner avec le nouveau décalage
+                    }
+                }
+                // Fonction pour activer/désactiver le mode de glissement de la souris
+                    canvas.addEventListener('mousedown', (event) => {
+                        isDragging = true;
+                        canvas.addEventListener('mousemove', updateCameraPosition);
+                    });
+
+                    canvas.addEventListener('mouseup', () => {
+                        isDragging = false;
+                        canvas.removeEventListener('mousemove', updateCameraPosition);
+                    });
+
+                    // Fonction de zoom avec la molette de la souris
+                    canvas.addEventListener('wheel', (event) => {
+                        const zoomFactor = 0.1;  // Facteur de zoom
+                        if (event.deltaY > 0) {
+                            zoom -= zoomFactor;  // Dézoomer
+                        } else {
+                            zoom += zoomFactor;  // Zoomer
+                        }
+                        zoom = Math.max(0.1, Math.min(zoom, 3));  // Limiter le zoom entre 0.1 et 3
+                        draw();  // Redessiner avec le nouveau niveau de zoom
+                        event.preventDefault();  // Empêcher le défilement de la page
+                    });
+                
+                function resizeCanvas() {
+                    canvas.width = canvas.clientWidth;
+                    canvas.height = canvas.clientHeight;
+                }
+                window.addEventListener("resize", resizeCanvas);
+                resizeCanvas();
+
+                let animals = [];
+
+                const socket = new WebSocket("wss://studious-guacamole-4jvp7vw5jvr4fq7jw-8000.app.github.dev/ws/animals/");
+
+
+                socket.onmessage = (event) => {
+                    animals = JSON.parse(event.data);
+                };
+
+                function drawArrow(x, y, dx, dy, color) {
+                    const angle = Math.atan2(dy, dx);  // Angle correct pour le mouvement
+                    ctx.save();
+                    ctx.translate(x, y);               // Positionne le canvas au centre de l'animal
+                    ctx.rotate(angle);                 // Oriente le canvas selon l'angle du mouvement
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.moveTo(0, -6);                 // Pointe de la flèche
+                    ctx.lineTo(4, 6);                  // Partie droite de la flèche
+                    ctx.lineTo(-4, 6);                 // Partie gauche de la flèche
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+
+                // Fonction de dessin avec le décalage et le zoom
+                function draw() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.save();
+                    ctx.translate(offsetX, offsetY);  // Applique le décalage à toute la scène
+                    ctx.scale(zoom, zoom);  // Applique le zoom à toute la scène
+
+                    for (let animal of animals) {
+                        ctx.fillStyle = animal.color;
+                        ctx.beginPath();
+                        ctx.arc(animal.x, animal.y, 10, 0, Math.PI * 2);
+                        ctx.fill();
+                        drawArrow(animal.x, animal.y, animal.dx, animal.dy, "black");
+                    }
+
+                    ctx.restore();
+                    requestAnimationFrame(draw);
+                }
+
+        // Appel initial pour démarrer la simulation
+        draw();
+        </script>
+    </body>
+</html>

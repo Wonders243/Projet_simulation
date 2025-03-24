@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation d'animaux</title>
+    <style>
+        body { margin: 0; background: black; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const numAnimals = 30;
+    let animals = [];
+
+    // Initialisation des animaux
+    for (let i = 0; i < numAnimals; i++) {
+        animals.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            dx: (Math.random() - 0.5) * 4, // Déplacement en X
+            dy: (Math.random() - 0.5) * 4, // Déplacement en Y
+            color: `hsl(${Math.random() * 360}, 100%, 70%)`
+        });
+    }
+
+    function update() {
+        for (let animal of animals) {
+            animal.x += animal.dx;
+            animal.y += animal.dy;
+
+            // Rebondir sur les bords
+            if (animal.x < 0 || animal.x > canvas.width) animal.dx *= -1;
+            if (animal.y < 0 || animal.y > canvas.height) animal.dy *= -1;
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let animal of animals) {
+            ctx.fillStyle = animal.color;
+            ctx.beginPath();
+            ctx.arc(animal.x, animal.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function animate() {
+        update();
+        draw();
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+</script>
+
+</body>
+</html>

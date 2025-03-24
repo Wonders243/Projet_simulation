@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    
+    <!-- En-tête -->
+    <header class="fixed top-0 left-0 w-full flex justify-between items-center p-4 bg-gray-800 bg-opacity-90 shadow-md backdrop-blur">
+        <img src="TEMPLATES" alt="Logo" class="h-10">
+        <h1 class="text-2xl font-bold">Inscription</h1>
+        <div class="flex space-x-4">
+            <a href="{% url 'accueil' %}" class="text-white hover:text-gray-300">Accueil</a>
+            <a href="{% url 'connexion' %}" class="text-white hover:text-gray-300">Connexion</a>
+        </div>
+    </header>
+    
+    <!-- Contenu principal -->
+    <main class="flex flex-col items-center justify-center min-h-screen px-6 space-y-6 pt-24">
+        <h2 class="text-2xl font-semibold">Créez votre compte</h2>
+        <p class="text-center max-w-2xl">Inscrivez-vous pour accéder à la simulation et interagir avec un écosystème dynamique.</p>
+        
+        <!-- Formulaire d'inscription -->
+        <div class="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
+            {% if form.errors %}
+                <div class="p-4 mb-4 text-red-400 bg-red-900 border border-red-500 rounded">
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-gray-300 mb-1">Nom d’utilisateur</label>
+                    <div class="bg-gray-700 p-2 rounded">{{ form.username }}</div>
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-1">Email</label>
+                    <div class="bg-gray-700 p-2 rounded">{{ form.email }}</div>
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-1">Mot de passe</label>
+                    <div class="bg-gray-700 p-2 rounded">{{ form.password }}</div>
+                </div>
+                <div>
+                    <label class="block text-gray-300 mb-1">Confirmez le mot de passe</label>
+                    <div class="bg-gray-700 p-2 rounded">{{ form.password_confirm }}</div>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    S'inscrire
+                </button>
+            </form>
+        </div>
+    </main>
+    
+    <!-- Pied de page -->
+    <footer class="bg-gray-800 text-center p-4 w-full mt-6">
+        <p>© 2025 Simulateur - Tous droits réservés</p>
+        <p>Contact : <a href="mailto:contact@simulateur.com" class="text-blue-400 hover:underline">contact@simulateur.com</a></p>
+        <p>Mentions légales | Politique de confidentialité</p>
+    </footer>
+</body>
+</html>

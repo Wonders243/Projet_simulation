@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Simulateur</title>
+    <script src="https://cdn.tailwindcss.com"></script> <!-- Utilisation de Tailwind CSS -->
+    <script>
+        // Fonction pour afficher/masquer le menu burger
+        function toggleMenu() {
+            document.getElementById("menu").classList.toggle("hidden");
+        }
+
+        // Défilement automatique du carrousel
+        let index = 0;
+        function changeImage() {
+            const images = document.querySelectorAll(".carousel img");
+            const texts = document.querySelectorAll(".carousel-text");
+            images.forEach(img => img.classList.add("hidden"));
+            texts.forEach(text => text.classList.add("hidden"));
+            
+            images[index].classList.remove("hidden");
+            texts[index].classList.remove("hidden");
+            
+            index = (index + 1) % images.length;
+        }
+        setInterval(changeImage, 4000); // Change d'image toutes les 4 secondes
+    </script>
+</head>
+<body class="bg-gray-900 text-white">
+    
+    <!-- Barre de navigation -->
+    <nav class="bg-gray-800 p-4 flex justify-between items-center fixed top-0 w-full shadow-md z-50">
+        <a href="{% url 'accueil'%}" class="text-xl font-bold">🏠 Accueil</a>
+        <button onclick="toggleMenu()" class="md:hidden text-xl focus:outline-none">☰</button>
+        <ul id="menu" class="hidden md:flex space-x-4">
+            <li><a href="{% url 'accueil' %}" class="hover:text-blue-400">Accueil</a></li>
+            <li><a href="{% url 'inscription' %}" class="hover:text-blue-400">Inscription</a></li>
+            <li><a href="{% url 'connexion' %}" class="hover:text-blue-400">Connexion</a></li>
+        </ul>
+    </nav>
+
+    <!-- Conteneur principal -->
+    <div class="flex justify-center items-center h-screen w-full pt-16">
+        
+        <!-- Colonne gauche : Carrousel d'images avec texte -->
+        <div class="hidden md:block w-1/2 h-full relative">
+            <div class="carousel w-full h-full flex justify-center items-center relative">
+                <img src="https://source.unsplash.com/800x600/?nature,water" class="absolute w-full h-full object-cover rounded-lg transition-opacity duration-1000">
+                <img src="https://source.unsplash.com/800x600/?animals,wildlife" class="absolute w-full h-full object-cover hidden rounded-lg transition-opacity duration-1000">
+                <img src="https://source.unsplash.com/800x600/?forest,landscape" class="absolute w-full h-full object-cover hidden rounded-lg transition-opacity duration-1000">
+                
+                <!-- Texte sur les images -->
+                <div class="absolute bottom-10 left-0 right-0 text-center text-white">
+                    <div class="carousel-text bg-black bg-opacity-50 p-4 rounded-lg hidden">
+                        <h2 class="text-xl font-bold">Explorez un monde sauvage</h2>
+                        <p class="text-sm">Observez la nature et les animaux interagir dans leur écosystème.</p>
+                    </div>
+                    <div class="carousel-text bg-black bg-opacity-50 p-4 rounded-lg hidden">
+                        <h2 class="text-xl font-bold">Une simulation vivante</h2>
+                        <p class="text-sm">Chaque action a un impact, façonnez l'équilibre de la nature.</p>
+                    </div>
+                    <div class="carousel-text bg-black bg-opacity-50 p-4 rounded-lg hidden">
+                        <h2 class="text-xl font-bold">Un environnement dynamique</h2>
+                        <p class="text-sm">Faites évoluer votre monde et observez les effets en temps réel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne droite : Formulaire de connexion -->
+        <div class="w-full md:w-1/2 flex justify-center">
+            <div class="w-full max-w-md bg-gray-800 p-8 rounded-lg shadow-lg">
+                
+                <!-- Titre -->
+                <h2 class="text-2xl font-bold text-center mb-4">Connexion</h2>
+
+                <!-- Affichage des erreurs Django -->
+                {% if form.errors %}
+                    <div class="p-4 mb-4 text-red-400 bg-red-900 border border-red-500 rounded">
+                        <ul>
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Formulaire de connexion -->
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    <!-- Champ Nom d’utilisateur -->
+                    <div>
+                        <label class="block text-gray-300">Nom d'utilisateur</label>
+                        {{ form.username }}
+                    </div>
+
+                    <!-- Champ Mot de passe -->
+                    <div>
+                        <label class="block text-gray-300">Mot de passe</label>
+                        {{ form.password }}
+                    </div>
+
+                    <!-- Bouton de connexion -->
+                    <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">
+                        Se connecter
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="bg-gray-800 text-center p-4 w-full absolute bottom-0">
+        <p>© 2025 Simulateur - Tous droits réservés</p>
+        <p>Contact : <a href="mailto:contact@simulateur.com" class="text-blue-400 hover:underline">contact@simulateur.com</a></p>
+        <p>Mentions légales | Politique de confidentialité</p>
+    </footer>
+
+</body>
+</html>
