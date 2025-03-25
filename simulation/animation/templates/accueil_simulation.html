@@ -412,14 +412,35 @@
                 const socket = new WebSocket('wss://orange-system-v6rjvrq96ww926qq-8001.app.github.dev/ws/animals/');
 
                 socket.onopen = function(event) {
-                console.log('Connexion WebSocket ouverte !');
-                
-                ws.send(JSON.stringify({ 'message': 'Bonjour du client WebSocket' }));
+                    console.log('Connexion WebSocket ouverte !');
+
+                    // Envoi d'un message au serveur après connexion
+                    socket.send(JSON.stringify({ 'message': 'Bonjour du client WebSocket' }));
                 };
-                socket.onmessage = (event) => {
-                    animals = JSON.parse(event.data);
+
+                socket.onmessage = function(event) {
+                    const data = JSON.parse(event.data); // Convertir le JSON en objet JavaScript
+
+                    console.log("Données reçues :", data);
+
+                    // Vérifier si `animaux` existe bien dans les données reçues
+                    if (data.animaux) {
+                        animals = data.animaux;
+                    }
+
+                    // Accéder aux informations envoyées
+                    console.log("Année :", data.annee);
+                    console.log("Mois :", data.mois);
+                    console.log("Jour :", data.jour);
+                    console.log("Température :", data.temperature);
+                    console.log("Climat :", data.climat);
+
+                    // Accéder aux animaux (qui est une liste)
+                    animals.forEach(animal => {
+                        console.log(`Animal : ${animal.nom}, Position : (${animal.x}, ${animal.y})`);
+                    });
                 };
-                                
+
                 socket.onclose = function(event) {
                     console.log('WebSocket est fermé.', event);
                 };
@@ -427,43 +448,45 @@
                 socket.onerror = function(error) {
                     console.error('Erreur WebSocket:', error);
                 };
+
+                // Fonction pour dessiner une flèche indiquant la direction d'un animal
                 function drawArrow(x, y, dx, dy, color) {
-                    const angle = Math.atan2(dy, dx);  // Angle correct pour le mouvement
+                    const angle = Math.atan2(dy, dx); // Calcul de l'angle de direction
                     ctx.save();
-                    ctx.translate(x, y);               // Positionne le canvas au centre de l'animal
-                    ctx.rotate(angle);                 // Oriente le canvas selon l'angle du mouvement
+                    ctx.translate(x, y); // Positionne le canvas au centre de l'animal
+                    ctx.rotate(angle); // Oriente la flèche selon la direction
                     ctx.fillStyle = color;
                     ctx.beginPath();
-                    ctx.moveTo(0, -6);                 // Pointe de la flèche
-                    ctx.lineTo(4, 6);                  // Partie droite de la flèche
-                    ctx.lineTo(-4, 6);                 // Partie gauche de la flèche
+                    ctx.moveTo(0, -6); // Pointe de la flèche
+                    ctx.lineTo(4, 6);  // Partie droite
+                    ctx.lineTo(-4, 6); // Partie gauche
                     ctx.closePath();
                     ctx.fill();
                     ctx.restore();
                 }
 
-
-                // Fonction de dessin avec le décalage et le zoom
+                // Fonction pour dessiner la simulation
                 function draw() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.save();
-                    ctx.translate(offsetX, offsetY);  // Applique le décalage à toute la scène
-                    ctx.scale(zoom, zoom);  // Applique le zoom à toute la scène
+                    ctx.translate(offsetX, offsetY);  // Applique le décalage
+                    ctx.scale(zoom, zoom);  // Applique le zoom
 
                     for (let animal of animals) {
-                        ctx.fillStyle = animal.color;
+                        ctx.fillStyle = animal.color || "blue"; // Utilisation d'une couleur par défaut
                         ctx.beginPath();
                         ctx.arc(animal.x, animal.y, 10, 0, Math.PI * 2);
                         ctx.fill();
-                        drawArrow(animal.x, animal.y, animal.dx, animal.dy, "black");
+                        drawArrow(animal.x, animal.y, animal.dx || 0, animal.dy || 0, "black");
                     }
 
                     ctx.restore();
                     requestAnimationFrame(draw);
                 }
 
-        // Appel initial pour démarrer la simulation
-        draw();
+                // Démarrer l'animation
+                draw();
+
         </script>
     </body>
 </html>

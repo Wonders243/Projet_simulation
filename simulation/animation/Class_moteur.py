@@ -40,6 +40,7 @@ class Simulation (AsyncWebsocketConsumer):
         super().__init__(*args, **kwargs)
         self.largeur = 1300  # Largeur du canvas en pixels
         self.hauteur = 900  # Hauteur du canvas en pixels
+        
         self.annee = 2025
         self.mois = 3
         self.jour = 25
@@ -131,6 +132,50 @@ class Simulation (AsyncWebsocketConsumer):
         # Affichage formaté
         print(f"{self.annee}/{self.mois}/{self.jour} - {self.heure:02}:{self.minute:02}:{self.seconde:02} [{cycle}]")
 
+    def recuperer_donnees_animaux_transferer(self):
+        """
+        Cette méthode récupère toutes les données des animaux sous forme de tableau (DataFrame),
+        en combinant les attributs des animaux avec ceux de la simulation.
+        """
+        # Liste pour stocker les données des animaux sous forme de liste
+        donnees_animaux = []
+
+        # Récuperation des donnees globales de la simulation
+        temperature = self.temperature  # Température de la simulation
+        climat = self.climat  # Climat de la simulation
+        heure = self.heure  # Heure actuelle de la simulation
+       
+        # On parcourt chaque animal et on recupere ses donnees specifiques
+        for animal in self.animaux:
+            # On récupère les attributs de chaque animal
+            nom = animal.nom
+            age = animal.age
+            poids = animal.poids
+            energie = animal.energie
+            faim = animal.faim
+            soif = animal.soif
+            nourriture_dispo = animal.nourriture_dispo  # Remplacer par l'attribut correct
+            eau_proche = animal.eau_proche  # Remplacer par l'attribut correct
+            proies = animal.proies  # Nombre de proies
+            predateurs = animal.predateurs  # Nombre de prédateurs
+            x=animal.x
+            y=animal.y
+            color= animal.color
+
+            # Ajout des données de l'animal dans la liste sous forme de ligne
+            donnees_animaux.append([
+                nom, age, poids, energie, faim, soif, nourriture_dispo, eau_proche, 
+                temperature, climat, predateurs, proies, heure, x, y, color
+            ])
+
+        # Convertir la liste de données en DataFrame pandas
+        df = pd.DataFrame(donnees_animaux, columns=[
+            "animal", "age", "poids", "energie", "faim", "soif", "nourriture", "eau", 
+            "temperature", "climat", "predateurs", "proies", "heure", "x","y", "color"
+        ])
+
+        return df
+    
     def recuperer_donnees_animaux(self):
         """
         Cette méthode récupère toutes les données des animaux sous forme de tableau (DataFrame),
@@ -157,6 +202,7 @@ class Simulation (AsyncWebsocketConsumer):
             eau_proche = animal.eau_proche  # Remplacer par l'attribut correct
             proies = animal.proies  # Nombre de proies
             predateurs = animal.predateurs  # Nombre de prédateurs
+
 
             # Ajout des données de l'animal dans la liste sous forme de ligne
             donnees_animaux.append([
@@ -198,7 +244,7 @@ class Simulation (AsyncWebsocketConsumer):
         """
         Envoie l'état actuel de la simulation au client WebSocket.
         """
-        donnees = self.recuperer_donnees_animaux()  # Récupère les données en DataFrame
+        donnees = self.recuperer_donnees_animaux_transferer()  # Récupère les données en DataFrame
         
         # Convertir les données du DataFrame en JSON lisible
         donnees_liste = donnees.to_dict(orient="records")
@@ -215,9 +261,11 @@ class Simulation (AsyncWebsocketConsumer):
             "animaux": donnees_liste,
         }
         await self.send(text_data=json.dumps(message))  # Envoi des données JSON au frontend
+        def interpreter(action):
+            return
 
     async def demarrer(self):
-       
+        
         while True:
             self.avancer_temps()
             donnees=self.recuperer_donnees_animaux()
@@ -226,13 +274,18 @@ class Simulation (AsyncWebsocketConsumer):
             await self.envoyer_donnees()
             await asyncio.sleep(self.tick_duree)  # Pause de 50ms entre chaque tick
      
+            for animal in self.animaux:
+                animal.se_deplacer_aleatoire()
+                
+            await asyncio.sleep(self.tick_duree)  # Pause de 50ms entre chaque tick
+     
     
 
 
 class Animal:
     def __init__(self, nom, x, y, age, poids, energie, faim, soif, vitesse=1, vision=100, angle_vision=90):
         self.nom = nom
-        self.x = x  # Position en pixels
+        self.x = x 
         self.y = y
         self.age = age
         self.poids = poids
@@ -241,13 +294,14 @@ class Animal:
         self.soif = soif  # (0-100)
         self.nourriture_dispo = 0  # Nourriture proche
         self.eau_proche = 0  # 1 si eau proche, 0 sinon
-        self.predateurs = 2
+        self.predateurs = 0
         self.proies = 1
         self.vitesse = vitesse  # Vitesse de déplacement
         self.vision = vision  # Distance de vision (rayon de détection)
         self.angle_vision = angle_vision  # Angle du champ de vision (en degrés)
         self.etat = "actif"  # L'état de l'animal (actif, fatigué, etc.)
         self.direction = 0  # Direction de l'animal (en radians)
+        self.color= self.attribuer_couleur()
 
     def distance(self, autre):
         """Calcule la distance entre cet animal et un autre."""
@@ -285,7 +339,7 @@ class Animal:
         angle = random.uniform(0, 2 * math.pi)
         self.x = max(0, min(self.x + math.cos(angle) * self.vitesse, 800))  # 800 = Largeur max
         self.y = max(0, min(self.y + math.sin(angle) * self.vitesse, 600))  # 600 = Hauteur max
-        print(f"{self.nom} se déplace aléatoirement [{int(self.x)}, {int(self.y)}]")
+        #print(f"{self.nom} se déplace aléatoirement [{int(self.x)}, {int(self.y)}]")
 
     def marcher_vers(self, cible):
         """Marche lentement vers la cible."""
@@ -380,6 +434,14 @@ class Animal:
         return
     def explorer():
         return
+    def attribuer_couleur(self):
+        couleurs = {
+            "ours": "#8B4513",    # Marron
+            "lion": "#FFD700",    # Or
+            "gazelle": "#DAA520", # Doré
+            "lapin": "#FFFFFF",   # Blanc
+        }
+        return couleurs.get(self.nom.lower(), "#808080")  # Gris par défaut si inconnu
 
 #simulation = Simulation()
 
