@@ -4,6 +4,7 @@ import json
 import math
 import random
 import asyncio
+from channels.layers import get_channel_layer
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 # predict_animal_decision.py
@@ -38,6 +39,7 @@ class Simulation (AsyncWebsocketConsumer):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.channel_layer = get_channel_layer()
         self.largeur = 1300  # Largeur du canvas en pixels
         self.hauteur = 900  # Hauteur du canvas en pixels
         
@@ -188,7 +190,7 @@ class Simulation (AsyncWebsocketConsumer):
         temperature = self.temperature  # Température de la simulation
         climat = self.climat  # Climat de la simulation
         heure = self.heure  # Heure actuelle de la simulation
-       
+
         # On parcourt chaque animal et on récupère ses données spécifiques
         for animal in self.animaux:
             # On récupère les attributs de chaque animal
@@ -261,8 +263,33 @@ class Simulation (AsyncWebsocketConsumer):
             "animaux": donnees_liste,
         }
         await self.send(text_data=json.dumps(message))  # Envoi des données JSON au frontend
-        def interpreter(action):
-            return
+    def interpreter(self,animal, action):
+        """ Interprète l'action et appelle la méthode correspondante sur l'animal. """
+        
+        if action == "chasser":
+            
+            animal.chasser()
+        elif action == "chercher de la nourriture":
+            animal.chercher_nourriture()
+        elif action == "boire":
+            animal.boire()
+        elif action == "chercher de l'eau":
+            animal.chercher_eau()
+        elif action == "se cacher":
+            animal.se_cacher()
+        elif action == "fuir":
+            animal.fuir()
+        elif action == "se regrouper":
+            animal.se_regrouper()
+        elif action == "dormir":
+            animal.dormir()
+        elif action == "se reposer":
+            animal.se_reposer()
+        elif action == "jouer / interagir":
+            animal.jouer_interagir()
+        else:  # Par défaut, si aucune condition spécifique n'est remplie
+            animal.explorer()
+
 
     async def demarrer(self):
         
@@ -271,8 +298,10 @@ class Simulation (AsyncWebsocketConsumer):
             donnees=self.recuperer_donnees_animaux()
             actions= self.animal_Action(donnees)
             print(actions)
+            for i, animal in enumerate(self.animaux):
+                self.interpreter(animal, actions[i]) 
             await self.envoyer_donnees()
-            await asyncio.sleep(self.tick_duree)  # Pause de 50ms entre chaque tick
+            await asyncio.sleep(self.tick_duree) 
      
             for animal in self.animaux:
                 animal.se_deplacer_aleatoire()
@@ -304,12 +333,12 @@ class Animal:
         self.color= self.attribuer_couleur()
 
     def distance(self, autre):
-        """Calcule la distance entre cet animal et un autre."""
+        """Calcule la distance entre cet animal et un autre. pytagore"""
         return math.sqrt((self.x - autre.x) ** 2 + (self.y - autre.y) ** 2)
 
     def angle_entre(self, autre):
-        """Calcule l'angle entre cet animal et un autre."""
-        return math.degrees(math.atan2(autre.y - self.y, autre.x - self.x)) % 360
+         """Calcule l'angle entre cet animal et un autre."""
+         return math.degrees(math.atan2(autre.y - self.y, autre.x - self.x)) % 360
 
     def est_dans_vision(self, autre):
         """Vérifie si un autre animal est dans le champ de vision de cet animal."""
@@ -332,7 +361,7 @@ class Animal:
         angle = math.atan2(cible.y - self.y, cible.x - self.x)
         self.x += math.cos(angle) * self.vitesse
         self.y += math.sin(angle) * self.vitesse
-        print(f"{self.nom} se déplace vers {cible.nom} [{int(self.x)}, {int(self.y)}]")
+       # print(f"{self.nom} se déplace vers {cible.nom} [{int(self.x)}, {int(self.y)}]")
 
     def se_deplacer_aleatoire(self):
         """Déplacement aléatoire en pixels."""
@@ -389,19 +418,7 @@ class Animal:
             print(f"{self.nom} est trop affaibli et meurt.")
             self.etat = "mort"  # L'animal est mort
 
-    def fuir_ou_chasser(self, autres_animaux):
-        """Décide si l'animal doit fuir ou chasser en fonction de la situation."""
-        proies = self.voir_environ(autres_animaux)
-        predators = [a for a in autres_animaux if isinstance(a, Animal) and self.distance(a) < 20 and a.etat == "prédateur"]
-
-        if predators:
-            # Si des prédateurs sont à proximité, l'animal doit fuir
-            for predateur in predators:
-                self.fuir(predateur)
-        elif proies:
-            # Si des proies sont à proximité, commence à chasser
-            self.chasser(proies[0])
-
+    
     def se_reposer(self):
         """L'animal se repose pour récupérer de l'énergie."""
         if self.energie < 100:
@@ -420,19 +437,19 @@ class Animal:
         self.angle_vision = valeur
         print(f"{self.nom} a maintenant un angle de vision de {self.angle_vision} degrés.")
 
-    def se_reposer():
+    def se_reposer(self):
         return
-    def dormir():
+    def dormir(self):
         return
     def chercher_de_la_nourriture():
         return
-    def se_cacher():
+    def se_cacher(self):
         return
-    def fuir():
+    def fuir(self):
         return
-    def regrouper():
+    def regrouper(self):
         return
-    def explorer():
+    def explorer(self):
         return
     def attribuer_couleur(self):
         couleurs = {
@@ -445,5 +462,5 @@ class Animal:
 
 #simulation = Simulation()
 
-# Démarre la simulation manuellement
-#asyncio.run(simulation.demarrer())
+#Démarre la simulation manuellement
+#asyncio.run(simulation.demarrer()) 
