@@ -363,7 +363,7 @@
             const ctx = canvas.getContext("2d");
 
                 let offsetX = 0, offsetY = 0;  // Décalage de la caméra
-                let zoom = 1;  // Niveau de zoom
+                let zoom = 0.6;  // Niveau de zoom
                 let isDragging = false;  // Détection si l'utilisateur fait glisser la souris
 
                 // Fonction pour mettre à jour la position de la caméra
@@ -386,10 +386,34 @@
                         isDragging = false;
                         canvas.removeEventListener('mousemove', updateCameraPosition);
                     });
+                    let selectedAnimalId = null;
+
+                    canvas.addEventListener("click", (event) => {
+                        const rect = canvas.getBoundingClientRect();
+                        const mouseX = (event.clientX - rect.left - offsetX) / zoom;
+                        const mouseY = (event.clientY - rect.top - offsetY) / zoom;
+
+                        // Détection de l'animal cliqué
+                        for (let animal of animals) {
+                            const dx = animal.x - mouseX;
+                            const dy = animal.y - mouseY;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+
+                            if (distance < 10) {  // Rayon du cercle de l'animal
+                                selectedAnimalId = animal.id; // On suppose que chaque animal a un `id` unique
+                                console.log("Animal sélectionné :", animal.nom);
+                                return;
+                            }
+                        }
+
+                        // Si aucun animal cliqué, désélectionner
+                        selectedAnimalId = null;
+                    });
+
 
                     // Fonction de zoom avec la molette de la souris
                     canvas.addEventListener('wheel', (event) => {
-                        const zoomFactor = 0.1;  // Facteur de zoom
+                        const zoomFactor = 0.005;  // Facteur de zoom
                         if (event.deltaY > 0) {
                             zoom -= zoomFactor;  // Dézoomer
                         } else {
@@ -477,7 +501,7 @@
                         ctx.beginPath();
                         ctx.arc(animal.x, animal.y, 10, 0, Math.PI * 2);
                         ctx.fill();
-                        drawArrow(animal.x, animal.y, animal.dx || 0, animal.dy || 0, "black");
+                        drawArrow(animal.x, animal.y, animal.x || 0, animal.y || 0, "black");
                     }
 
                     ctx.restore();

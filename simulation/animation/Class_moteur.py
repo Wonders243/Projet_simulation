@@ -40,8 +40,8 @@ class Simulation (AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.channel_layer = get_channel_layer()
-        self.largeur = 1300  # Largeur du canvas en pixels
-        self.hauteur = 900  # Hauteur du canvas en pixels
+        self.largeur = 20000  # Largeur du canvas en pixels
+        self.hauteur = 20000  # Hauteur du canvas en pixels
         
         self.annee = 2025
         self.mois = 3
@@ -53,7 +53,7 @@ class Simulation (AsyncWebsocketConsumer):
         self.temperature=20
         self.climat= "neige"
 
-        self.tick_duree = 0.05  # 50 ms par tick
+        self.tick_duree = 0  # 50 ms par ticks
         self.ticks_par_jour = 72000  # 1 jour simulé = 1 heure réelle
         self.ticks_par_heure = 3000  # 1 heure simulée = 3000 ticks
         self.ticks_par_minute = 50  # 1 minute simulée = 50 ticks
@@ -70,7 +70,7 @@ class Simulation (AsyncWebsocketConsumer):
         """ Initialise quelques animaux dans la simulation. """
         # Ajouter des animaux à la simulation avec leurs caractéristiques
         animaux_types = ["lapin", "ours", "lion"]
-        for _ in range(10):
+        for _ in range(60):
             type_animal = random.choice(animaux_types)
             age = random.randint(1, 10)
             poids = random.randint(10, 150)
@@ -143,23 +143,23 @@ class Simulation (AsyncWebsocketConsumer):
         donnees_animaux = []
 
         # Récuperation des donnees globales de la simulation
-        temperature = self.temperature  # Température de la simulation
-        climat = self.climat  # Climat de la simulation
-        heure = self.heure  # Heure actuelle de la simulation
+        temperature = self.temperature 
+        climat = self.climat 
+        heure = self.heure 
        
         # On parcourt chaque animal et on recupere ses donnees specifiques
         for animal in self.animaux:
-            # On récupère les attributs de chaque animal
+            
             nom = animal.nom
             age = animal.age
             poids = animal.poids
             energie = animal.energie
             faim = animal.faim
             soif = animal.soif
-            nourriture_dispo = animal.nourriture_dispo  # Remplacer par l'attribut correct
-            eau_proche = animal.eau_proche  # Remplacer par l'attribut correct
-            proies = animal.proies  # Nombre de proies
-            predateurs = animal.predateurs  # Nombre de prédateurs
+            nourriture_dispo = animal.nourriture_dispo  
+            eau_proche = animal.eau_proche  
+            proies = animal.proies  
+            predateurs = animal.predateurs  
             x=animal.x
             y=animal.y
             color= animal.color
@@ -263,43 +263,51 @@ class Simulation (AsyncWebsocketConsumer):
             "animaux": donnees_liste,
         }
         await self.send(text_data=json.dumps(message))  # Envoi des données JSON au frontend
+
     def interpreter(self,animal, action):
         """ Interprète l'action et appelle la méthode correspondante sur l'animal. """
         
         if action == "chasser":
-            
-            animal.chasser()
+            if len(animal.listproies)>0:
+                proie_proche = min(animal.listproies, key=lambda animal: animal.distance(animal))
+                animal.chasser(proie_proche)
         elif action == "chercher de la nourriture":
             animal.chercher_nourriture()
         elif action == "boire":
             animal.boire()
-        elif action == "chercher de l'eau":
-            animal.chercher_eau()
+        #elif action == "chercher de l'eau":
+           # animal.chercher_eau()
         elif action == "se cacher":
             animal.se_cacher()
         elif action == "fuir":
             animal.fuir()
         elif action == "se regrouper":
-            animal.se_regrouper()
+            animal.regrouper()
         elif action == "dormir":
             animal.dormir()
         elif action == "se reposer":
             animal.se_reposer()
-        elif action == "jouer / interagir":
-            animal.jouer_interagir()
+         #elif action == "jouer / interagir":
+             #animal.jouer_interagir()
         else:  # Par défaut, si aucune condition spécifique n'est remplie
             animal.explorer()
 
 
     async def demarrer(self):
-        
         while True:
             self.avancer_temps()
+            for animal in self.animaux :
+                animal.mettre_a_jour_environnement( self.animaux)
+                animal.mettre_a_jour_faim()
+
             donnees=self.recuperer_donnees_animaux()
             actions= self.animal_Action(donnees)
             print(actions)
             for i, animal in enumerate(self.animaux):
-                self.interpreter(animal, actions[i]) 
+                if(animal.est_vivant==True):
+                    action = str(actions[i]).lower()
+                    animal.recuperer_apres_course()
+                    self.interpreter(animal, action) 
             await self.envoyer_donnees()
             await asyncio.sleep(self.tick_duree) 
      
@@ -316,21 +324,35 @@ class Animal:
         self.nom = nom
         self.x = x 
         self.y = y
+        self.dx =1
+        self.dy=1
         self.age = age
         self.poids = poids
         self.energie = energie  # (0-100)
+        self.vitesse_max=50
         self.faim = faim  # (0-100)
         self.soif = soif  # (0-100)
         self.nourriture_dispo = 0  # Nourriture proche
         self.eau_proche = 0  # 1 si eau proche, 0 sinon
         self.predateurs = 0
-        self.proies = 1
-        self.vitesse = vitesse  # Vitesse de déplacement
-        self.vision = vision  # Distance de vision (rayon de détection)
-        self.angle_vision = angle_vision  # Angle du champ de vision (en degrés)
-        self.etat = "actif"  # L'état de l'animal (actif, fatigué, etc.)
-        self.direction = 0  # Direction de l'animal (en radians)
+        self.proies = 0
+        self.listpredateurs = []
+        self.listproies = []
+        self.vitesse = 1  # Vitesse de déplacement
+        self.vision = 50  
+        self.angle_vision = 45  
+        self.etat = "actif" 
+        self.angle = 0  # Direction de l'animal (en radians)
+        self.acceleration=0.3
         self.color= self.attribuer_couleur()
+        self.fatigue=0
+        self.nourriture_mangée=0
+        self.est_vivant = True
+
+    def mourir(self):
+        self.etat = "mort"
+        self.est_vivant = False
+        print(f"{self.nom} est mort.")
 
     def distance(self, autre):
         """Calcule la distance entre cet animal et un autre. pytagore"""
@@ -342,74 +364,145 @@ class Animal:
 
     def est_dans_vision(self, autre):
         """Vérifie si un autre animal est dans le champ de vision de cet animal."""
-        # Calculer l'angle entre l'animal et l'autre
         angle = self.angle_entre(autre)
-        
-        # Vérifier si l'animal est dans le champ de vision (angle +/- angle_vision)
-        angle_diff = abs(self.direction - angle)
+        angle_diff = abs(self.angle - angle)
         if angle_diff > 180:
             angle_diff = 360 - angle_diff
-        
         return angle_diff <= self.angle_vision / 2 and self.distance(autre) <= self.vision
 
-    def voir_environ(self, autres_animaux):
-        """Renvoie les animaux visibles dans un rayon et un angle définis."""
-        return [autre for autre in autres_animaux if autre is not self and self.est_dans_vision(autre)]
+    def mettre_a_jour_environnement(self, autres_animaux):
+        """Met à jour la liste des prédateurs et des proies visibles."""
+        #self.listproies = []
+        #self.listpredateurs = []
+        for autre in autres_animaux:
+            if autre is not self and self.est_dans_vision(autre) and autre :
+                if self.peut_chasser(autre) and not self.listproies.__contains__(autre):  # Définir les relations proie/prédateur
+                    self.listproies.append(autre)
+                elif autre.peut_chasser(self) and not self.listpredateurs.__contains__(autre):
+                    self.listpredateurs.append(autre)
+
+            self.proies=len(self.listproies)
+            self.predateurs = len(self.listpredateurs)
+
+    def peut_chasser(self, autre):
+        """Détermine si cet animal peut chasser l'autre """
+        relations_predation = {
+            "lion": ["gazelle", "lapin"],
+            "loup": ["lapin"],
+            "ours": ["lapin", "gazelle"],
+        }
+        return autre.nom.lower() in relations_predation.get(self.nom.lower(), [])
 
     def se_deplacer_vers(self, cible):
         """Se rapproche d'une cible avec déplacement progressif."""
         angle = math.atan2(cible.y - self.y, cible.x - self.x)
         self.x += math.cos(angle) * self.vitesse
         self.y += math.sin(angle) * self.vitesse
-       # print(f"{self.nom} se déplace vers {cible.nom} [{int(self.x)}, {int(self.y)}]")
+    
+    def eviter_les_bords(self, marge=50):
+        """Modifie la direction pour éviter de rester coincé aux bords de la carte."""
+        largeur, hauteur = 2010, 2010  # Dimensions de la grille +1 pour cohérence avec range max
+
+        if self.x < marge:
+            self.dx += 0.5  # Tendance à aller vers la droite
+        elif self.x > largeur - marge:
+            self.dx -= 0.5  # Tendance à aller vers la gauche
+
+        if self.y < marge:
+            self.dy += 0.5  # Tendance à descendre
+        elif self.y > hauteur - marge:
+            self.dy -= 0.5  # Tendance à monter
+
+        # Applique une limitation de vitesse douce
+        speed = math.sqrt(self.dx**2 + self.dy**2)
+        if speed > self.vitesse_max:
+            self.dx *= self.vitesse_max / speed
+            self.dy *= self.vitesse_max / speed
+
 
     def se_deplacer_aleatoire(self):
-        """Déplacement aléatoire en pixels."""
-        angle = random.uniform(0, 2 * math.pi)
-        self.x = max(0, min(self.x + math.cos(angle) * self.vitesse, 800))  # 800 = Largeur max
-        self.y = max(0, min(self.y + math.sin(angle) * self.vitesse, 600))  # 600 = Hauteur max
-        #print(f"{self.nom} se déplace aléatoirement [{int(self.x)}, {int(self.y)}]")
+        """Déplacement aléatoire fluide en pixels avec inertie et évitement des bords."""
+        self.dx += random.uniform(-0.2, 0.2)
+        self.dy += random.uniform(-0.2, 0.2)
+        self.eviter_les_bords()  
+        self.x = max(0, min(self.x + self.dx, 20000))
+        self.y = max(0, min(self.y + self.dy, 20000))
+        self.consommer_energie("se_deplacer_aleatoire")
 
     def marcher_vers(self, cible):
-        """Marche lentement vers la cible."""
-        print(f"{self.nom} marche lentement vers {cible.nom}.")
         self.se_deplacer_vers(cible)
-
+        
     def courir_vers(self, cible):
-        """Court rapidement vers la cible."""
-        print(f"{self.nom} court rapidement vers {cible.nom}.")
-        self.vitesse *= 2  # Double la vitesse pour simuler la course
-        self.se_deplacer_vers(cible)
-        self.vitesse /= 2  # Restaure la vitesse normale après la course
+       
+        # Augmenter progressivement la vitesse jusqu'à la vitesse max
+        nouvelle_vitesse = min(self.vitesse + self.acceleration, self.vitesse_max)
+        self.vitesse = nouvelle_vitesse
 
-    def fuir(self, predateur):
-        """Fuit un prédateur."""
-        print(f"{self.nom} fuit {predateur.nom} !")
-        angle = math.atan2(self.y - predateur.y, self.x - predateur.x)
-        self.x += math.cos(angle) * self.vitesse * 2  # Fuite rapide
+        # Déplacement vers la cible
+        self.se_deplacer_vers(cible)
+
+        # Fatigue : plus on va vite, plus ça fatigue
+        fatigue_générée = self.vitesse * 0.1
+        self.fatigue += fatigue_générée
+        self.energie -= fatigue_générée * 0.5  # Bonus : courir consomme aussi de l'énergie
+
+        # Limite fatigue (facultatif)
+        if self.fatigue > 100:
+            self.fatigue = 100
+
+        # Si trop fatigué, ralentir automatiquement
+        if self.fatigue > 70:
+            print(f"{self.nom} est fatigué et ralentit...")
+            self.vitesse *= 0.7  # Ralentissement si trop fatigué
+
+        self.consommer_energie("courir_vers")
+
+    def recuperer_apres_course(self):
+        """Ralentit progressivement et réduit la fatigue si l'animal n'est plus en action intense."""
+
+        if self.vitesse > 3:  
+            self.vitesse -= self.acceleration * 0.5
+            if self.vitesse < 3:
+                self.vitesse = 3
+
+        if self.fatigue > 0:
+            self.fatigue -= 0.5  # Repos progressif
+
+
+
+    def fuir(self):
+        """Fuit les prédateurs en s'éloignant du plus proche."""
+        
+        # Trouver le prédateur le plus proche
+        predateur_proche = min(self.listpredateurs, key=lambda p: self.distance(p))
+
+        angle = math.atan2(self.y - predateur_proche.y, self.x - predateur_proche.x)
+        
+        self.x += math.cos(angle) * self.vitesse * 2  
         self.y += math.sin(angle) * self.vitesse * 2
-        print(f"{self.nom} fuit en direction [{int(self.x)}, {int(self.y)}]")
+        
+        # Consommer de l'énergie en fuyant
+        self.consommer_energie("fuir")
 
     def chasser(self, proie):
-        """Logique de chasse : approche, attaque, etc."""
-        distance = self.distance(proie)
 
-        if distance > 5:
-            # Si la proie est trop éloignée, marche vers elle
-            self.marcher_vers(proie)
-        elif distance <= 5:
-            # Si la proie est proche, commence l'attaque
-            print(f"{self.nom} commence à attaquer {proie.nom} !")
+        distance = self.distance(proie)
+        if distance <= 5:
             self.mordre(proie)
+            self.marcher_vers(proie)
+        if distance < 70 and  distance > 5:
+            self.courir_vers(proie)
+        elif distance <= self.vision and  distance>50:
+            self.marcher_vers(proie)
+        self.consommer_energie("chasser")
 
     def mordre(self, proie):
-        """Effectue l'attaque sur une proie."""
+
         if self.energie > 10:  # Vérifie si l'animal a assez d'énergie pour mordre
-            print(f"{self.nom} mord {proie.nom} !")
-            proie.subir_degats(20)  # inflige des dégâts à la proie
-            self.energie -= 10  # consomme de l'énergie
-        else:
-            print(f"{self.nom} est trop fatigué pour mordre.")
+            
+            proie.subir_degats(20)  
+            self.energie -= 2  
+        self.consommer_energie("mordre")
 
     def subir_degats(self, degats):
         """Subit des dégâts et réagit en conséquence."""
@@ -417,15 +510,27 @@ class Animal:
         if self.poids <= 0:
             print(f"{self.nom} est trop affaibli et meurt.")
             self.etat = "mort"  # L'animal est mort
+        
 
     
     def se_reposer(self):
         """L'animal se repose pour récupérer de l'énergie."""
         if self.energie < 100:
-            print(f"{self.nom} se repose pour récupérer de l'énergie.")
             self.energie = min(100, self.energie + 10)  # Récupère 10 points d'énergie
-        else:
-            print(f"{self.nom} est déjà plein d'énergie.")
+            
+    def mettre_a_jour_faim(self):
+        """Met à jour le niveau de faim en fonction de la nourriture mangée."""
+        # Si l'animal a mangé, la faim diminue
+        self.faim -= self.nourriture_mangée * 10  
+        
+        if self.faim < 0:
+            self.faim = 0
+
+        if self.nourriture_mangée == 0:
+            self.faim += 5  
+        
+        if self.faim > 100:
+            self.faim = 100
 
     def ajuster_vision(self, valeur):
         """Ajuste le champ de vision de l'animal."""
@@ -436,16 +541,52 @@ class Animal:
         """Ajuste l'angle de vision de l'animal."""
         self.angle_vision = valeur
         print(f"{self.nom} a maintenant un angle de vision de {self.angle_vision} degrés.")
+    
+    def consommer_energie(self, activite="marche", duree=1):
+        """Consomme de l'énergie en fonction du poids, de la vitesse, de l'activité et de la fatigue accumulée."""
+        
+        # Facteurs d'activité
+        facteurs_activite = {
+            "repos": 0.2,
+            "marche": 1,
+            "course": 2,
+            "chasse": 3,
+            "fuite": 3
+        }
+        
+        # Récupération du facteur d'activité (défaut = marche)
+        F_activite = facteurs_activite.get(activite, 1)
+        
+        # Métabolisme de base
+        metabolism_base = 0.05 * self.poids
+        
+        # Coût énergétique lié à la vitesse
+        cout_vitesse = (self.vitesse ** 1.5) / 5
+        
+        # Fatigue accumulée (augmente le coût si l'animal fait un effort prolongé)
+        facteur_fatigue = 1 + 0.1 * self.fatigue
+        
+        # Calcul de la consommation
+        consommation = (metabolism_base + cout_vitesse) * F_activite * facteur_fatigue * duree
+        
+        # Réduction de l’énergie
+        self.energie = max(0, self.energie - consommation)
+        
+        # Augmentation de la fatigue
+        if activite in ["course", "chasse", "fuite"]:
+            self.fatigue += duree  # Courir ou chasser fatigue plus
+        else:
+            self.fatigue = max(0, self.fatigue - duree / 2)  # La fatigue diminue avec le temps
 
-    def se_reposer(self):
-        return
+        # Vérification de l’épuisement
+        if self.energie == 0:
+            self.etat = "fatigué"
+       
     def dormir(self):
         return
     def chercher_de_la_nourriture():
         return
     def se_cacher(self):
-        return
-    def fuir(self):
         return
     def regrouper(self):
         return
@@ -459,6 +600,50 @@ class Animal:
             "lapin": "#FFFFFF",   # Blanc
         }
         return couleurs.get(self.nom.lower(), "#808080")  # Gris par défaut si inconnu
+
+
+class SystemeTerritorial:
+    def __init__(self):
+        self.noeuds = {}  # clé = espèce, valeur = {'position': (x, y), 'force': (fx, fy)}
+
+    def centre_de_gravite(animaux, espece):
+        positions = [(a.x, a.y) for a in animaux if a.espece == espece]
+        if not positions:
+            return (0, 0)
+        x = sum(p[0] for p in positions) / len(positions)
+        y = sum(p[1] for p in positions) / len(positions)
+        return (x, y)
+
+
+    def mettre_a_jour(self, animaux):
+        # Mise à jour des positions (centre de gravité)
+        for espece in set(a.nom for a in animaux):
+            pos = self.centre_de_gravite(animaux, espece)
+            self.noeuds.setdefault(espece, {'position': pos, 'force': (0, 0)})
+            self.noeuds[espece]['position'] = pos
+
+        # Appliquer des forces de répulsion entre territoires
+        for espece1 in self.noeuds:
+            fx, fy = 0, 0
+            x1, y1 = self.noeuds[espece1]['position']
+            for espece2 in self.noeuds:
+                if espece1 == espece2:
+                    continue
+                x2, y2 = self.noeuds[espece2]['position']
+                dx = x1 - x2
+                dy = y1 - y2
+                distance = (dx**2 + dy**2)**0.5 + 0.01
+                force = 100 / distance  # force de répulsion
+                fx += dx / distance * force
+                fy += dy / distance * force
+            self.noeuds[espece1]['force'] = (fx, fy)
+
+    def appliquer_deplacement(self, facteur=0.1):
+        for espece, data in self.noeuds.items():
+            x, y = data['position']
+            fx, fy = data['force']
+            self.noeuds[espece]['position'] = (x + facteur * fx, y + facteur * fy)
+
 
 #simulation = Simulation()
 
