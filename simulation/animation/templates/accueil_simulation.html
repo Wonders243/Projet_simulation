@@ -95,8 +95,8 @@
             }
 
             canvas {
-                width: 90%;
-                height: 90%;
+                width: 100%;
+                height: 100%;
                 display: block;
                 border-radius: 1px;
                 border-color: #ffffff;
@@ -209,7 +209,9 @@
                 right: 0;
                 z-index: 1000; 
             }
-
+            .burger-btn{
+                position: fixed;
+            }
             .dropdown-menu {
                 position: fixed;
                 top: 60px;
@@ -226,8 +228,8 @@
                 
             }
             #simulationCanvas {
-                width: 90%; /* Remplit presque tout le div parent */
-                height: 90%;
+                width: 100%; 
+                height: 100%;
             }
         </style>
     </head>
@@ -265,11 +267,18 @@
             <a href="#">Profil</a>
             <a href="{% url 'deconnexion' %}">Déconnexion</a>
         </div>
+        <!-- Bouton burger -->
+        <button id="burger-btn" 
+            class="fixed top-20 left-2 z-50 bg-gray-800 bg-opacity-70 hover:bg-opacity-100 
+                text-white text-3xl px-3 py-1 rounded-md shadow-md transition">
+            ☰
+        </button>
 
         <!-- Zone de contenu, ajout d'un padding pour compenser l'en-tête fixe -->
         <div class="content-wrapper flex flex-1">
-            <aside class="w-[15vw] min-w-[200px] h-screen bg-gray-800 p-4 flex flex-col space-y-4">
-                <h3 class="text-lg font-semibold mb-3 text-gray-300">Influencez la Simulation</h3>
+           
+            <aside id="sidebar" class="w-[15vw] min-w-[200px] h-screen bg-gray-800 p-4 flex flex-col space-y-4 fixed top-18 left-0 z-40 transform transition-transform duration-300 ease-in-out -translate-x-full">
+                <h3 class="text-lg font-semibold mb-3 text-gray-300 top-10">Influencez la Simulation</h3>
                     
                 <!-- Zone de saisie pour les prompts -->
                 <div class="relative w-full">
@@ -303,9 +312,6 @@
                             onclick="toggleFullscreen()">
                         ⛶
                     </button>
-
-                    <!-- Affichage d'un point -->
-                    <div id="point" class="absolute bg-red-500 rounded-full" style="width: 10px; height: 10px; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
                 </div>
             </main>
         </div>
@@ -317,21 +323,27 @@
         </footer>
 
         <script>
+            const burgerBtn = document.getElementById('burger-btn');
+            const sidebar = document.getElementById('sidebar');
+
+            burgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
             function resizeTextarea() {
                 const textarea = document.getElementById("prompt-input");
-                const temp=textarea.style.height;
-                if (textarea.scrollHeight > textarea.clientHeight && textarea.scrollHeight <200) {
+                const temp = textarea.style.height;
+                if (textarea.scrollHeight > textarea.clientHeight && textarea.scrollHeight < 200) {
                     textarea.style.height = `${textarea.scrollHeight}px`; // Définit la hauteur à celle du contenu
-                }else if(textarea.scrollHeight < textarea.clientHeight && textarea.clientHeight>150){
+                } else if (textarea.scrollHeight < textarea.clientHeight && textarea.clientHeight > 150) {
                     textarea.style.height = `${textarea.scrollHeight}px`;
                 }
             }
-
+        
             // Fonction pour afficher/masquer le menu burger
             function toggleMenu() {
                 const menu = document.getElementById('dropdown-menu');
                 const isMenuVisible = menu.classList.contains('show');
-
+        
                 // Masquer le menu si visible, sinon afficher
                 if (isMenuVisible) {
                     menu.classList.remove('show');
@@ -339,7 +351,7 @@
                     menu.classList.add('show');
                 }
             }
-
+        
             // Fonction pour fermer le menu si un clic se fait en dehors
             document.addEventListener('click', function(event) {
                 const menu = document.getElementById('dropdown-menu');
@@ -348,7 +360,7 @@
                     menu.classList.remove('show');
                 }
             });
-
+        
             // Fonction pour activer/désactiver le plein écran
             function toggleFullscreen() {
                 if (!document.fullscreenElement) {
@@ -359,158 +371,220 @@
                     }
                 }
             }
+        
             const canvas = document.getElementById("canvas");
             const ctx = canvas.getContext("2d");
-
-                let offsetX = 0, offsetY = 0;  // Décalage de la caméra
-                let zoom = 0.6;  // Niveau de zoom
-                let isDragging = false;  // Détection si l'utilisateur fait glisser la souris
-
-                // Fonction pour mettre à jour la position de la caméra
-                function updateCameraPosition(event) {
-                    if (isDragging) {
-                        const dx = event.movementX;
-                        const dy = event.movementY;
-                        offsetX += dx;
-                        offsetY += dy;
-                        draw();  // Redessiner avec le nouveau décalage
+        
+            let offsetX = 0, offsetY = 0;  // Décalage de la caméra
+            let zoom = 0.6;  // Niveau de zoom
+            let isDragging = false;  // Détection si l'utilisateur fait glisser la souris
+        
+            // Fonction pour mettre à jour la position de la caméra
+            function updateCameraPosition(event) {
+                if (isDragging) {
+                    const dx = event.movementX;
+                    const dy = event.movementY;
+                    offsetX += dx;
+                    offsetY += dy;
+                    draw();  // Redessiner avec le nouveau décalage
+                }
+            }
+        
+            // Fonction pour activer/désactiver le mode de glissement de la souris
+            canvas.addEventListener('mousedown', (event) => {
+                isDragging = true;
+                canvas.addEventListener('mousemove', updateCameraPosition);
+            });
+        
+            canvas.addEventListener('mouseup', () => {
+                isDragging = false;
+                canvas.removeEventListener('mousemove', updateCameraPosition);
+            });
+        
+            let selectedAnimalId = null;
+        
+            canvas.addEventListener("click", (event) => {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = (event.clientX - rect.left - offsetX) / zoom;
+                const mouseY = (event.clientY - rect.top - offsetY) / zoom;
+        
+                // Détection de l'animal cliqué
+                for (let animal of animals) {
+                    const dx = animal.x - mouseX;
+                    const dy = animal.y - mouseY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+        
+                    if (distance < 10) {  // Rayon du cercle de l'animal
+                        selectedAnimalId = animal.id; // On suppose que chaque animal a un `id` unique
+                        console.log("Animal sélectionné :", animal.nom);
+                        return;
                     }
                 }
-                // Fonction pour activer/désactiver le mode de glissement de la souris
-                    canvas.addEventListener('mousedown', (event) => {
-                        isDragging = true;
-                        canvas.addEventListener('mousemove', updateCameraPosition);
-                    });
+        
+                // Si aucun animal cliqué, désélectionner
+                selectedAnimalId = null;
+            });
+        
+            canvas.addEventListener('wheel', (event) => {
+                const zoomFactor = 0.01;
+                const rect = canvas.getBoundingClientRect();
+                const container = canvas.parentElement.getBoundingClientRect();  // Conteneur visible
 
-                    canvas.addEventListener('mouseup', () => {
-                        isDragging = false;
-                        canvas.removeEventListener('mousemove', updateCameraPosition);
-                    });
-                    let selectedAnimalId = null;
+                const mouseX = (event.clientX - rect.left - offsetX) / zoom;
+                const mouseY = (event.clientY - rect.top - offsetY) / zoom;
 
-                    canvas.addEventListener("click", (event) => {
-                        const rect = canvas.getBoundingClientRect();
-                        const mouseX = (event.clientX - rect.left - offsetX) / zoom;
-                        const mouseY = (event.clientY - rect.top - offsetY) / zoom;
+                const oldZoom = zoom;
+                let newZoom = zoom;
 
-                        // Détection de l'animal cliqué
-                        for (let animal of animals) {
-                            const dx = animal.x - mouseX;
-                            const dy = animal.y - mouseY;
-                            const distance = Math.sqrt(dx * dx + dy * dy);
-
-                            if (distance < 10) {  // Rayon du cercle de l'animal
-                                selectedAnimalId = animal.id; // On suppose que chaque animal a un `id` unique
-                                console.log("Animal sélectionné :", animal.nom);
-                                return;
-                            }
-                        }
-
-                        // Si aucun animal cliqué, désélectionner
-                        selectedAnimalId = null;
-                    });
-
-
-                    // Fonction de zoom avec la molette de la souris
-                    canvas.addEventListener('wheel', (event) => {
-                        const zoomFactor = 0.005;  // Facteur de zoom
-                        if (event.deltaY > 0) {
-                            zoom -= zoomFactor;  // Dézoomer
-                        } else {
-                            zoom += zoomFactor;  // Zoomer
-                        }
-                        zoom = Math.max(0.1, Math.min(zoom, 3));  // Limiter le zoom entre 0.1 et 3
-                        draw();  // Redessiner avec le nouveau niveau de zoom
-                        event.preventDefault();  // Empêcher le défilement de la page
-                    });
-                
-                function resizeCanvas() {
-                    canvas.width = canvas.clientWidth;
-                    canvas.height = canvas.clientHeight;
-                }
-                window.addEventListener("resize", resizeCanvas);
-                resizeCanvas();
-
-                let animals = [];
-
-                const socket = new WebSocket('wss://orange-system-v6rjvrq96ww926qq-8001.app.github.dev/ws/animals/');
-
-                socket.onopen = function(event) {
-                    console.log('Connexion WebSocket ouverte !');
-
-                    // Envoi d'un message au serveur après connexion
-                    socket.send(JSON.stringify({ 'message': 'Bonjour du client WebSocket' }));
-                };
-
-                socket.onmessage = function(event) {
-                    const data = JSON.parse(event.data); // Convertir le JSON en objet JavaScript
-
-                    console.log("Données reçues :", data);
-
-                    // Vérifier si `animaux` existe bien dans les données reçues
-                    if (data.animaux) {
-                        animals = data.animaux;
-                    }
-
-                    // Accéder aux informations envoyées
-                    console.log("Année :", data.annee);
-                    console.log("Mois :", data.mois);
-                    console.log("Jour :", data.jour);
-                    console.log("Température :", data.temperature);
-                    console.log("Climat :", data.climat);
-
-                    // Accéder aux animaux (qui est une liste)
-                    animals.forEach(animal => {
-                        console.log(`Animal : ${animal.nom}, Position : (${animal.x}, ${animal.y})`);
-                    });
-                };
-
-                socket.onclose = function(event) {
-                    console.log('WebSocket est fermé.', event);
-                };
-
-                socket.onerror = function(error) {
-                    console.error('Erreur WebSocket:', error);
-                };
-
-                // Fonction pour dessiner une flèche indiquant la direction d'un animal
-                function drawArrow(x, y, dx, dy, color) {
-                    const angle = Math.atan2(dy, dx); // Calcul de l'angle de direction
-                    ctx.save();
-                    ctx.translate(x, y); // Positionne le canvas au centre de l'animal
-                    ctx.rotate(angle); // Oriente la flèche selon la direction
-                    ctx.fillStyle = color;
-                    ctx.beginPath();
-                    ctx.moveTo(0, -6); // Pointe de la flèche
-                    ctx.lineTo(4, 6);  // Partie droite
-                    ctx.lineTo(-4, 6); // Partie gauche
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.restore();
+                if (event.deltaY > 0) {
+                    newZoom *= 1 - zoomFactor; // Dézoomer
+                } else {
+                    newZoom *= 1 + zoomFactor; // Zoomer
                 }
 
-                // Fonction pour dessiner la simulation
-                function draw() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.save();
-                    ctx.translate(offsetX, offsetY);  // Applique le décalage
-                    ctx.scale(zoom, zoom);  // Applique le zoom
+                newZoom = Math.max(0.5, Math.min(newZoom, 3));
 
-                    for (let animal of animals) {
-                        ctx.fillStyle = animal.color || "blue"; // Utilisation d'une couleur par défaut
-                        ctx.beginPath();
-                        ctx.arc(animal.x, animal.y, 10, 0, Math.PI * 2);
-                        ctx.fill();
-                        drawArrow(animal.x, animal.y, animal.x || 0, animal.y || 0, "black");
-                    }
+                // Simulation du cadre de zoom après changement
+                const newWidth = canvas.width * newZoom;
+                const newHeight = canvas.height * newZoom;
 
-                    ctx.restore();
-                    requestAnimationFrame(draw);
+                const futureOffsetX = offsetX - (mouseX * newZoom - mouseX * oldZoom);
+                const futureOffsetY = offsetY - (mouseY * newZoom - mouseY * oldZoom);
+
+                const canvasLeft = futureOffsetX;
+                const canvasRight = futureOffsetX + newWidth;
+                const canvasTop = futureOffsetY;
+                const canvasBottom = futureOffsetY + newHeight;
+
+                const margin = 50;  // Tolérance de distance aux bords
+
+                if (
+                    canvasLeft < -container.width + margin || canvasRight > container.width - margin ||
+                    canvasTop < -container.height + margin || canvasBottom > container.height - margin
+                ) {
+                    // On ne change pas le zoom car on dépasse les limites
+                    return;
                 }
 
-                // Démarrer l'animation
+                // On applique le zoom et les nouveaux offsets
+                zoom = newZoom;
+                offsetX = futureOffsetX;
+                offsetY = futureOffsetY;
+
                 draw();
+                event.preventDefault();
+            });
 
+            function resizeCanvas() {
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+            }
+        
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
+        
+            let animals = [];
+            let ressources = [];  // Initialisation de la variable des ressources
+            let points = []
+            
+            const socket = new WebSocket('wss://orange-system-v6rjvrq96ww926qq-8001.app.github.dev/ws/animals/');
+        
+            socket.onmessage = function(event) {
+                const data = JSON.parse(event.data); // Convertir le JSON en objet JavaScript
+                console.log("Données reçues :", data);
+        
+                // Vérifier si `animaux` existe bien dans les données reçues
+                if (data.animaux) {
+                    animals = data.animaux;
+                }
+                if (data.ressources) {
+                    ressources = data.ressources;  // Met à jour les ressources
+                }
+                if (data.points) {
+                    points = data.points;  // Met à jour les ressources
+                }
+            };
+        
+            socket.onclose = function(event) {
+                console.log('WebSocket est fermé.', event);
+            };
+        
+            socket.onerror = function(error) {
+                console.error('Erreur WebSocket:', error);
+            };
+        
+            // Fonction pour dessiner une flèche pour représenter la direction de l'animal
+            function drawArrow(x, y, dx, dy, color) {
+                const angle = Math.atan2(dy, dx); // Calcul de l'angle de direction
+                ctx.save();
+                ctx.translate(x, y); // Positionne le canvas au centre de l'animal
+                ctx.rotate(angle); // Oriente la flèche selon la direction
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.moveTo(0, -6); // Pointe de la flèche
+                ctx.lineTo(4, 6);  // Partie droite
+                ctx.lineTo(-4, 6); // Partie gauche
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+            // Fonction pour dessiner les ressources (plantes et eau)
+            function dessinerRessources() {
+                // Parcours toutes les ressources pour les dessiner
+                ressources.forEach(ressource => {
+                    if (ressource.type === "plante") {
+                        ctx.beginPath();
+                        ctx.arc(ressource.x, ressource.y, 20, 0, Math.PI * 2); // Cercle représentant la plante
+                        ctx.fillStyle = 'green';
+                        ctx.fill();
+                        ctx.closePath();
+                    } else if (ressource.type === "eau") {
+                        // Dessiner le centre de l'eau
+                        ctx.beginPath();
+                        ctx.arc(ressource.x, ressource.y, 100, 0, Math.PI * 2); // Cercle plus grand pour l'eau
+                        ctx.fillStyle = 'blue';
+                        ctx.fill();
+                        ctx.closePath();
+
+                        points.forEach(point => {
+                            ctx.beginPath();
+                            ctx.arc(point.x, point.y, 2, 0, Math.PI * 2);
+                            ctx.fillStyle = 'lightblue';
+                            ctx.fill();
+                            ctx.closePath();
+                        });
+                    }
+                });
+            }
+        
+            // Fonction pour dessiner la simulation (animaux et ressources)
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Efface le canvas à chaque image
+                ctx.save();
+                ctx.translate(offsetX, offsetY);  // Applique le décalage
+                ctx.scale(zoom, zoom);  // Applique le zoom
+        
+                // Dessiner les ressources
+                dessinerRessources();
+        
+                // Dessiner les animaux
+                for (let animal of animals) {
+                    ctx.fillStyle = animal.color || "blue"; // Utilisation d'une couleur par défaut
+                    ctx.beginPath();
+                    ctx.arc(animal.x, animal.y, 10, 0, Math.PI * 2); // Dessine l'animal
+                    ctx.fill();
+                    ctx.closePath();
+        
+                    // Dessiner la flèche pour l'animal, en fonction de sa direction
+                    drawArrow(animal.x, animal.y, animal.dx || 0, animal.dy || 0, "black");
+                }
+        
+                ctx.restore();
+                requestAnimationFrame(draw);  // Demande une nouvelle animation
+            }
+        
+            // Démarrer l'animation
+            draw();
         </script>
     </body>
 </html>
