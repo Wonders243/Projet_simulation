@@ -20,6 +20,9 @@ from auth_app import views
 from animation import views2
 from animation.views2 import accueil_simulation
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,4 +32,4 @@ urlpatterns = [
     path('deconnexion/', views.deconnexion, name='deconnexion'),
     path('accueil_simulation/',accueil_simulation , name='accueil_simulation'),
     path('simulation/',views2.index, name='animation'),
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

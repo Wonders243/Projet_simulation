@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="fr">
     <head>
@@ -233,12 +235,14 @@
             }
         </style>
     </head>
+
     <body class="bg-gray-900 text-white flex flex-col">
         
         <!-- En-tête fixe -->
         <header class="flex justify-between items-center p-4 bg-gray-800 bg-opacity-40 shadow-md backdrop-blur z-10 rounded-b-lg">
             <!-- Logo -->
-            <img src="logo.png" alt="Logo" class="h-10">
+            
+            <img src="{% static 'image/logo_v2.png' %}" alt="Logo"  class="h-12 w-auto>
             
             <!-- Titre principal -->
             <h1 class="text-2xl font-semibold">Tableau de Bord</h1>
@@ -491,7 +495,6 @@
         
             socket.onmessage = function(event) {
                 const data = JSON.parse(event.data); // Convertir le JSON en objet JavaScript
-                console.log("Données reçues :", data);
         
                 // Vérifier si `animaux` existe bien dans les données reçues
                 if (data.animaux) {

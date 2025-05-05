@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -31,7 +32,7 @@
     
     <!-- Barre de navigation -->
     <nav class="bg-gray-800 p-4 flex justify-between items-center fixed top-0 w-full shadow-md z-50">
-        <a href="{% url 'accueil'%}" class="text-xl font-bold">🏠 Accueil</a>
+        <a href="{% url 'accueil'%}" class="text-xl font-bold"><img src="{% static 'image/logo_v2.png' %}" alt="Logo"  class="h-12 w-auto></a>
         <button onclick="toggleMenu()" class="md:hidden text-xl focus:outline-none">☰</button>
         <ul id="menu" class="hidden md:flex space-x-4">
             <li><a href="{% url 'accueil' %}" class="hover:text-blue-400">Accueil</a></li>
@@ -46,10 +47,9 @@
         <!-- Colonne gauche : Carrousel d'images avec texte -->
         <div class="hidden md:block w-1/2 h-full relative">
             <div class="carousel w-full h-full flex justify-center items-center relative">
-                <img src="https://source.unsplash.com/800x600/?nature,water" class="absolute w-full h-full object-cover rounded-lg transition-opacity duration-1000">
-                <img src="https://source.unsplash.com/800x600/?animals,wildlife" class="absolute w-full h-full object-cover hidden rounded-lg transition-opacity duration-1000">
-                <img src="https://source.unsplash.com/800x600/?forest,landscape" class="absolute w-full h-full object-cover hidden rounded-lg transition-opacity duration-1000">
                 
+                <img src="{% static 'image/logo_v2.png' %}" alt="Logo"  class="absolute w-full h-full object-cover rounded-lg transition-opacity duration-1000">
+               
                 <!-- Texte sur les images -->
                 <div class="absolute bottom-10 left-0 right-0 text-center text-white">
                     <div class="carousel-text bg-black bg-opacity-50 p-4 rounded-lg hidden">

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -19,7 +20,7 @@
 <body class="bg-gray-900 text-white">
     <!-- En-tête fixe avec le logo -->
     <header class="fixed top-0 left-0 w-full flex justify-between items-center p-4 bg-gray-800 bg-opacity-90 shadow-md backdrop-blur">
-        <img src="C:\Users\larja\Desktop\project_fin_licence\simulation\TEMPLATES\R_M.webp" alt="Logo" class="h-10"> <!-- Logo en haut à gauche -->
+        <img src="{% static 'image/logo_v2.png' %}" alt="Logo"  class="h-12 w-auto>
         <h1 class="text-2xl font-bold">Simulateur</h1> <!-- Titre au centre -->
         <div class="flex space-x-4"> <!-- Liens d'inscription et connexion -->
             <a href="{% url 'inscription' %}" class="text-white hover:text-gray-300">Inscription</a>
@@ -45,7 +46,7 @@
         <!-- Carrousel d'images de la simulation -->
         <div class="w-3/4 max-w-lg overflow-hidden rounded-lg shadow-lg mt-6">
             <div class="relative w-full h-64">
-                <img id="carousel-image" src="screenshot1.png" alt="Capture d'écran de la simulation" class="w-full h-full object-cover fade">
+                <img src="{% static 'image/logo_v2.png' %}" alt="Logo"  class="w-full h-full object-cover fade">
             </div>
         </div>
     </main>
@@ -53,7 +54,7 @@
     <!-- Pied de page avec les informations importantes -->
     <footer class="bg-gray-800 text-center p-4 w-full mt-6">
         <p>© 2025 Simulateur - Tous droits réservés</p>
-        <p>Contact : <a href="mailto:contact@simulateur.com" class="text-blue-400 hover:underline">contact@simulateur.com</a></p>
+        <p>Contact : <a href="mailto:merveilles.katabi_somwe@simulateur.com" class="text-blue-400 hover:underline">contact@simulateur.com</a></p>
         <p>Mentions légales | Politique de confidentialité</p>
     </footer>
 

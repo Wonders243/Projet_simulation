@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,7 +12,7 @@
     
     <!-- En-tête -->
     <header class="fixed top-0 left-0 w-full flex justify-between items-center p-4 bg-gray-800 bg-opacity-90 shadow-md backdrop-blur">
-        <img src="TEMPLATES" alt="Logo" class="h-10">
+        <img src="{% static 'image/logo_v2.png' %}" alt="Logo"  class="h-12 w-auto>
         <h1 class="text-2xl font-bold">Inscription</h1>
         <div class="flex space-x-4">
             <a href="{% url 'accueil' %}" class="text-white hover:text-gray-300">Accueil</a>
