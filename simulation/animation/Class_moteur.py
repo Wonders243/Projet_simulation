@@ -81,8 +81,8 @@ class Simulation (AsyncWebsocketConsumer):
             type_animal = random.choice(animaux_types)
             age = random.randint(1, 15)
             poids = random.randint(10, 200)
-            energie = random.randint(60, 100)
-            faim = random.randint(0, 30)
+            energie = random.randint(10, 50)
+            faim = random.randint(60, 90)
             soif = random.randint(0, 31)
             y,x= self.territoires[type_animal]
             if type_animal == "lion":
@@ -112,11 +112,6 @@ class Simulation (AsyncWebsocketConsumer):
             ressources.append(Plante(x, y))
 
         return ressources
-   
-   
-
-        
-
 
     def animal_Action(self, test_data):
         # Vérifie que test_data est bien un DataFrame
@@ -399,7 +394,7 @@ class Simulation (AsyncWebsocketConsumer):
         }
         
         # Exécution de l'action
-        action_finale = animal.determiner_action_finale(action)
+        action_finale = action
         
         if action_finale in actions_disponibles:
             if action_finale in ["satisfaire besoin"]:
@@ -410,7 +405,6 @@ class Simulation (AsyncWebsocketConsumer):
                 actions_disponibles[action_finale]()
         else:
             animal.explorer()  # Action par défaut
-
 
     def _satisfaire_besoin(self, animal):
         """Gère la satisfaction des besoins (eau ou nourriture)"""
@@ -425,11 +419,10 @@ class Simulation (AsyncWebsocketConsumer):
             elif animal in ["lion, ours"]:
                self.ressources= animal.explorer_ressources(self.ressources, self.animaux)
 
-
     async def demarrer(self):
 
-        self.Old_animaux=self.animaux
-        vie= len(self.Old_animaux)>0
+        self.Old_animaux = self.animaux
+        vie= len(self.animaux) > 0
         while vie:
             self.avancer_temps()
             donnees=self.recuperer_donnees_animaux()
@@ -453,7 +446,7 @@ class Animal:
     def __init__(self, nom, x, y, age, poids, energie, faim, soif,  territoire, vitesse=3, vision=100, rayon_territoire=100):
         self.nom = nom
         self.color= self.attribuer_couleur()
-        self.vitesse = self.attribuer_vitesse()
+        self.vitesse = 2
         self.vitesse_max = self.attribuer_vitesse_max()
         self.vision = self.attribuer_vision()
         self.angle_vision = self.attribuer_angle_vision()
@@ -681,6 +674,7 @@ class Animal:
         self.y = max(0, min(self.y, hauteur))
 
     def se_deplacer_aleatoire(self):
+        
         self.etat = "actif"
         """Déplacement aléatoire libre, sans attraction vers un territoire."""
 
@@ -690,8 +684,12 @@ class Animal:
         else:
             self.angle += random.uniform(-0.2, 0.2)  # Dérive progressive
 
+        # vitesse d'exploration
+        if self.vitesse> 0.2*self.vitesse_max :
+            self.vitesse *=0.6
+
         # Variation de vitesse pour plus de naturel
-        vitesse_actuelle = self.vitesse * random.uniform(0.8, 1.2)
+        vitesse_actuelle = self.vitesse * random.uniform(0.9, 1.1)
 
         # Calcul du déplacement
         dx = math.cos(self.angle) * vitesse_actuelle
@@ -700,68 +698,8 @@ class Animal:
         self.x += dx
         self.y += dy
 
-        self.eviter_les_bords(urgence=True)
-        
-        
-    def explorer_librement_ressources(self, ressources):
-        self.etat="actif"
-        """
-        Exploration aléatoire de la carte, tout en vérifiant la présence de ressources
-        dans le champ de vision. Met à jour l'état si des ressources sont détectées.
-        
-        :param ressources: Liste de tuples (type_ressource, (x, y))
-        """
-        if not isinstance(ressources, list):
-            return
-            
-        # Limiter la mémoire des zones visitées
-        if len(self.memoire_zones) > 50:
-            self.memoire_zones.pop(0)
-        
-        # Vérifier les ressources visibles
-        for ressource in ressources:
-            if not hasattr(ressource, 'x') or not hasattr(ressource, 'y'):
-                continue
-                
-            type_ressource = "eau" if isinstance(ressource, Eau) else "nourriture"
-            position=Position(ressource.x, ressource.y)
-
-            if self.est_dans_vision(position):
-                if type_ressource == 'eau' and position not in self.eaux:
-                    self.eau_proche = 1
-                    self.eaux.append(position)
-                elif type_ressource == 'nourriture' and position not in self.nourriture:
-                    self.nourriture_dispo = 1
-                    self.nourriture.append(position)
-
-        # Évite les zones récemment visitées avec une probabilité croissante
-        for ancien_x, ancien_y in self.memoire_zones[-10:]:  # Ne vérifier que les 10 dernières
-            distance = math.hypot(self.x - ancien_x, self.y - ancien_y)
-            if distance < 200:
-                # Plus on est proche, plus on a de chance de changer de direction
-                if random.random() < (200 - distance) / 200:
-                    self.angle += random.uniform(0.3, 0.5)
-
-        # Variation aléatoire de direction mais avec une tendance à aller tout droit
-        self.angle += random.uniform(-0.1, 0.1)
-        
-        # Normaliser l'angle pour éviter les valeurs trop grandes
-        self.angle %= 2 * math.pi
-
-        # Calcul du déplacement
-        dx = math.cos(self.angle) * self.vitesse
-        dy = math.sin(self.angle) * self.vitesse
-
-        # Appliquer le déplacement
-        self.x += dx
-        self.y += dy
-
-        # Empêcher de sortir de la carte
         self.eviter_les_bords()
-
-        # Mémoriser la position
-        self.memoire_zones.append((self.x, self.y))
-   
+        
     def se_deplacer_vers(self, cible):
         self.etat="actif"
         """
@@ -859,28 +797,49 @@ class Animal:
             return  
 
         # Trouver le prédateur le plus proche
-        predateur_proche = min(self.listpredateurs, key=lambda p: self.distance(p))
+        menace = min(self.listpredateurs, key=lambda p: self.distance(p))
 
-        # Calcul des différences
-        dx = self.x - predateur_proche.x
-        dy = self.y - predateur_proche.y
-        dist = math.sqrt(dx ** 2 + dy ** 2)
+        """Fuit une menace en ligne droite, avec feinte si trop proche."""
+        self.etat = "fuite"
 
-        if dist > 0:
-            # Accélération dans la direction opposée au prédateur
-            self.dx += 0.1*(dx / dist) * self.acceleration
-            self.dy += 0.1*(dy / dist) * self.acceleration
+        # Vecteur depuis la menace vers l’animal (opposé à chasser)
+        vecteur_x = self.x - menace.x
+        vecteur_y = self.y - menace.y
 
-            # Limitation de la vitesse maximale
-            speed = math.sqrt(self.dx ** 2 + self.dy ** 2)
-            if speed > self.vitesse_max:
-                self.dx = self.vitesse_max
-                self.dy = self.vitesse_max
+        # Distance à la menace
+        distance = math.sqrt(vecteur_x**2 + vecteur_y**2)
+        if distance == 0:
+            return  # évite division par 0 si même position
+
+        # Feinte si la menace est trop proche
+        if distance < 50:  # seuil de danger immédiat
+            angle_fuite = math.atan2(vecteur_y, vecteur_x)
+            angle_feinte = angle_fuite + random.choice([-1, 1]) * random.uniform(math.pi/6, math.pi/3)
+            direction_x = math.cos(angle_feinte)
+            direction_y = math.sin(angle_feinte)
+        else:
+            # Fuite en ligne droite
+            direction_x = vecteur_x / distance
+            direction_y = vecteur_y / distance
+
+        # Appliquer l’accélération
+        self.dx += direction_x * self.acceleration
+        self.dy += direction_y * self.acceleration
+
+        # Limiter la vitesse maximale
+        vitesse_actuelle = math.sqrt(self.dx**2 + self.dy**2)
+        if vitesse_actuelle > self.vitesse_max:
+            facteur = self.vitesse_max / vitesse_actuelle
+            self.dx *= facteur
+            self.dy *= facteur
 
         # Mise à jour de la position
         self.x += self.dx
         self.y += self.dy
-            
+
+        # Facultatif : angle pour affichage ou orientation
+        self.angle = math.atan2(self.dy, self.dx)
+        
 
     def chercher_abri():
         pass
@@ -888,17 +847,45 @@ class Animal:
     def chasser(self):
 
         if len(self.listproies) > 0:
-            proie_proche = min(self.listproies, key=lambda a: self.distance(a))
-          
-            distance = self.distance(proie_proche)
-            if distance == 0:
-                self.mordre(proie_proche)
-                self.marcher_vers(proie_proche)
-            else:
-                self.courir_vers(proie_proche)
+            proie = min(self.listproies, key=lambda a: self.distance(a))
+
+            # Calcul du vecteur direction vers la proie
+            vecteur_x = proie.x - self.x
+            vecteur_y = proie.y - self.y
+
+            # Normalisation du vecteur direction
+            distance = math.sqrt(vecteur_x**2 + vecteur_y**2)
+            
+            if distance <6:
+                self.mordre(proie)
+                return
+
+            direction_x = vecteur_x / distance
+            direction_y = vecteur_y / distance
+
+            # Mise à jour des vitesses directionnelles avec accélération
+            self.dx += direction_x * self.acceleration
+            self.dy += direction_y * self.acceleration
+
+            # Calcul de la vitesse actuelle
+            vitesse_actuelle = math.sqrt(self.dx**2 + self.dy**2)
+
+            # Limiter à la vitesse maximale
+            if vitesse_actuelle > self.vitesse_max:
+                facteur = self.vitesse / vitesse_actuelle
+                self.dx *= facteur
+                self.dy *= facteur
+
+            # Appliquer le déplacement
+            self.x += self.dx
+            self.y += self.dy
+
+            # Facultatif : orientation visuelle (angle pour affichage ou comportement)
+            self.angle = math.atan2(self.dy, self.dx)
+
         else:
             self.explorer()
-            
+        
 
     def mordre(self, proie):
         self.etat="actif"
@@ -1021,6 +1008,7 @@ class Animal:
         self.mettre_a_jour_environnement(autres_animaux, ressources)
         self.mettre_a_jour_faim()
         self.vitesse_max_atteignable()
+        self.maj_vitesse()
         self.recuperer_apres_course()
         self.consommer_energie()
 
@@ -1040,14 +1028,8 @@ class Animal:
         }
         return couleurs.get(self.nom.lower(), "#808080")  # Gris par défaut si inconnu
     
-    def attribuer_vitesse(self):
-        vitesses = {
-            "ours": 2,
-            "lion": 4,
-            "gazelle": 6,
-            "lapin": 5,
-        }
-        return vitesses.get(self.nom.lower(), 3)  # Par défaut 3
+    def maj_vitesse(self):
+        self.vitesse= math.sqrt(self.dx**2 + self.dy**2)+1
 
     def attribuer_vision(self):
         visions = {
@@ -1069,10 +1051,10 @@ class Animal:
 
     def attribuer_acceleration(self):
         accels = {
-            "ours": 1.1,
-            "lion": 1.2,
-            "gazelle": 1.4,
-            "lapin": 1.3,
+            "ours": 1.9,
+            "lion": 2,
+            "gazelle": 3,
+            "lapin": 2,
         }
         return accels.get(self.nom.lower(), 2)
 
@@ -1202,17 +1184,10 @@ class Animal:
         self.se_deplacer_aleatoire()
         pass
 
-
-
-
-
-
-
 class Ressource:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-
 
 class Plante(Ressource):
     def __init__(self, x, y):
@@ -1221,7 +1196,6 @@ class Plante(Ressource):
 
     def __repr__(self):
         return f"Plante({self.x:.0f}, {self.y:.0f})"
-
 
 class Eau:
     def __init__(self, x, y, rayon):
