@@ -77,7 +77,7 @@ class Simulation (AsyncWebsocketConsumer):
         """ Initialise quelques animaux dans la simulation. """
         # Ajouter des animaux à la simulation avec leurs caractéristiques
         animaux_types = ["lapin", "lion", "ours"]
-        for _ in range(20):
+        for _ in range(15):
             type_animal = random.choice(animaux_types)
             age = random.randint(1, 15)
             poids = random.randint(10, 200)
@@ -491,10 +491,10 @@ class Animal:
         self.est_vivant = True
 
     def mourir(self):
-        self.etat="inactif"
-        self.etat = "mort"
-        self.est_vivant = False
-        print(f"{self.nom} est mort.")
+        if self.energie<1:
+            self.etat = "mort"
+            self.est_vivant = False
+            print(f"{self.nom} est mort.")
 
     def memoriser_action(self, action):
         """Ajoute une action à la mémoire de l'animal (FIFO de 3 éléments)."""
@@ -577,12 +577,37 @@ class Animal:
         return math.degrees(math.atan2(autre.y - self.y, autre.x - self.x)) % 360
 
     def est_dans_vision(self, autre):
-        """Vérifie si un autre animal est dans le champ de vision de cet animal."""
-        angle = self.angle_entre(autre)
-        angle_diff = abs(self.angle - angle)
-        if angle_diff > 180:
-            angle_diff = 360 - angle_diff
-        return angle_diff <= self.angle_vision / 2 and self.distance(autre) <= self.vision or self.distance(autre) <= 10
+        """Vérifie si 'autre' est dans le champ de vision (cône orienté selon dx, dy) de cet animal."""
+
+        # Vecteur direction de l'animal
+        direction_norme = math.hypot(self.dx, self.dy)
+
+        if direction_norme == 0:
+            return False  
+
+        vx = self.dx / direction_norme
+        vy = self.dy / direction_norme
+
+        # Vecteur vers l'autre animal
+        dx = autre.x - self.x
+        dy = autre.y - self.y
+        distance = math.hypot(dx, dy)
+        if distance == 0:
+            return True  # même position
+
+        ux = dx / distance
+        uy = dy / distance
+
+        # Produit scalaire pour obtenir le cosinus de l'angle
+        cos_theta = vx * ux + vy * uy
+        angle_rad = math.acos(max(-1, min(1, cos_theta)))  # Clamp entre -1 et 1
+        angle_deg = math.degrees(angle_rad)
+
+        # Test de vision
+        dans_cône = angle_deg <= self.angle_vision / 2
+        dans_portee = distance <= self.vision or distance <= 10
+
+        return dans_cône and dans_portee
 
     def mettre_a_jour_environnement(self, autres_animaux, Ressources):
         """
@@ -597,6 +622,7 @@ class Animal:
         proies_temporaires = set()
         plantes_visibles = set()
         eau_visible = set()
+        self.nourriture=set()
 
         # Analyse des autres animaux
         for autre in autres_animaux:
@@ -606,11 +632,14 @@ class Animal:
             distance = self.distance(autre)
             dans_vision = self.est_dans_vision(autre)
 
-            if dans_vision or distance < 50:
+            if dans_vision :
                 if self.peut_chasser(autre):
                     proies_temporaires.add(autre)
                 elif autre.peut_chasser(self):
                     predateurs_temporaires.add(autre)
+            if self.peut_chasser(autre) and not autre.est_vivant:
+                self.nourriture.add(autre)
+                self.nourriture_dispo=  len(self.nourriture)
 
         # Analyse des ressources
         for ressource in Ressources:
@@ -630,10 +659,12 @@ class Animal:
         self.listeau = list(eau_visible)
 
         self.proies = len(self.listproies)
-        self.predateurs = len(self.listpredateurs)
-        self.plantes = len(self.listplantes)
-        self.eau_proche= len(self.listeau)
 
+        self.predateurs = len(self.listpredateurs)
+        if self.nom not in ["lion", "ours"]:
+            self.nourriture_dispo = 1 if len(self.listplantes)>0 else 0
+            
+        self.eau_proche= len(self.listeau)
     def peut_chasser(self, autre):
         """Détermine si cet animal peut chasser l'autre """
         relations_predation = {
@@ -1011,6 +1042,7 @@ class Animal:
         self.maj_vitesse()
         self.recuperer_apres_course()
         self.consommer_energie()
+        self.mourir()
 
     def chercher_partenaire(self):
         self.etat="actif"
@@ -1060,8 +1092,8 @@ class Animal:
 
     def attribuer_vitesse_max(self):
         vmax = {
-            "ours": 5,
-            "lion": 7.5,
+            "ours": 7,
+            "lion": 9,
             "gazelle": 12,
             "lapin": 10,
         }
@@ -1110,8 +1142,50 @@ class Animal:
                 self.energie=100
                 
     def manger(self):
-       
-        pass
+
+        if self.nom not in ["lion", "ours"] :
+            if not self.listplantes:  # Si aucune plante disponible
+                print("Aucune plante à manger !")
+                return
+            
+            # Trouve la plante la plus proche
+            plante = min(self.listplantes, key=lambda p: self.distance(p))
+            distance = self.distance(plante)
+            
+            if distance <5:  # Si sur la plante
+                # Valeur nutritive de la plante (ex: entre 10 et 30)
+                nutrition = min(30, max(10, plante.taille * 5))  
+                
+                # Calcul de la nouvelle énergie (sans dépasser 100)
+                self.energie = min(100, self.energie + nutrition)
+                
+                # Réduction de la faim (entre 40% et 70% selon la nutrition)
+                self.faim *= 0.7 - (nutrition / 100)  
+                
+                print(f"Mangé {plante}! +{nutrition} énergie")
+                self.listplantes.remove(plante)  # La plante est consommée
+                
+            else: 
+                self.marcher_vers(plante)
+        else:
+            
+            nourriture=min(self.nourriture, key=lambda p: self.distance(p))
+            distance=self.distance(nourriture)
+
+            if distance <5:  # Si sur la plante
+                # Valeur nutritive de la plante 
+                nutrition = 30 *max(1- min(nourriture.poids/ 250, 1), 0)  
+                
+                # Calcul de la nouvelle énergie (sans dépasser 100)
+                self.energie = min(100, self.energie + nutrition)
+                
+                # Réduction de la faim (entre 40% et 70% selon la nutrition)
+                self.faim *= 0.7 - (nutrition / 100)  
+                
+                self.nourriture.remove(nourriture)  # La plante est consommée
+                
+            else: 
+                self.marcher_vers(nourriture)
     
     def se_cacher(self):
         position=Position(self.territoire_x, self.territoire_y)
@@ -1133,16 +1207,18 @@ class Animal:
    
     # Méthodes de repos
     def se_reposer(self):
+
         position=Position(self.territoire_x, self.territoire_y)
         distance= self.distance(position)
+
         if(distance>500):
-            self.se_deplacer_vers(position)
+            self.courir_vers(position)
         else:
             self.marcher_vers(position)
 
         if(self.distance(position)<random.choice([0,300]) and self.etat!="repos" and self.vitesse>0):
-            self.etat="repos"
-            if( self.vitesse>2):
+            self.etat="invisible"
+            if( self.vitesse>0):
                 self.vitesse *=0.8
             self.fatigue -= 4
             self.energie += 10
@@ -1161,16 +1237,15 @@ class Animal:
             x=self.x + random.uniform(-10, 10),  # Petit décalage aléatoire
             y=self.y + random.uniform(-10, 10),
             age=0,
-            poids=self.poids * 0.7,
+            poids=self.poids * 0.2,
             energie=self.energie * 0.8,
-            faim=0.1,
+            faim= 100-(0.8*self.energie),
             soif=0.1,
             territoire=(self.territoire_x, self.territoire_y),
             rayon_territoire=self.rayon_territoire
         )
         if(random.random()<0.01):
             animaux.append(bebe)
-            self.energie *= 0.7  
             self.pret_reproduction = 0  
 
         return animaux
@@ -1193,6 +1268,7 @@ class Plante(Ressource):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.type = "plante"
+        self.taille = random.randint(2, 10)
 
     def __repr__(self):
         return f"Plante({self.x:.0f}, {self.y:.0f})"

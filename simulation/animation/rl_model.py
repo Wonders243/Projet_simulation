@@ -46,11 +46,11 @@ def determine_decision(animal, faim, soif, energie, nourriture, eau, predateurs,
         return "satisfaire besoin" if eau or nourriture ==1 else "chercher ressources"
     
     # 5. Fatigue
-    if energie < 30.00 or (temps < 6 and temps > 6 and energie < 50.00):
+    if energie < 30 or (temps < 6 and temps > 6 and energie < 70):
         return "se reposer"
     
     # 6. Reproduction
-    if pret_reproduction and energie > 40.00 and faim < 60.00 and soif < 60.00:
+    if pret_reproduction and energie > 40 and faim < 60 and soif < 60:
         return "se reproduire" if partenaire_proche else "chercher partenaire"
     
     # 7. Action par défaut
