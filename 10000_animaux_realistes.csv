@@ -1,0 +1,301 @@
+animal,age,poids,energie,faim,soif,nourriture,eau,temperature,climat,predateurs,proies,heure,pret_reproduction,partenaire_proche,decision
+lion,6,200,35,21,42,0,1,-5,pluie,0,0,nuit,0,0,explorer
+lion,1,146,21,17,29,1,1,27,ensoleillé,0,3,nuit,0,0,se reposer
+lapin,5,3,26,24,1,0,0,41,neige,2,0,jour,0,0,se cacher
+lion,6,224,12,49,78,1,0,18,vent,0,2,jour,0,0,chercher de l'eau
+lion,1,153,22,29,26,0,0,31,nuageux,0,0,jour,0,0,se reposer
+ours,5,278,46,6,53,0,0,38,pluie,0,0,nuit,0,0,se reposer
+lion,1,153,21,28,16,1,0,8,pluie,0,3,jour,0,0,se reposer
+lion,8,241,79,23,45,1,1,-7,pluie,0,2,jour,1,1,jouer / interagir
+lion,8,229,65,63,19,0,0,14,pluie,0,0,nuit,0,0,explorer
+lion,6,195,73,56,9,0,1,19,pluie,0,2,jour,0,0,jouer / interagir
+lion,10,231,13,74,94,1,0,12,pluie,0,0,nuit,0,0,chercher de l'eau
+ours,4,217,78,5,25,1,1,4,vent,0,0,nuit,1,0,chercher un partenaire
+lapin,9,3,51,0,7,1,1,21,vent,0,0,jour,0,0,jouer / interagir
+lion,7,211,87,44,36,0,1,1,ensoleillé,0,3,jour,1,0,explorer
+lion,2,154,16,32,73,1,0,17,neige,0,2,nuit,0,0,chercher de l'eau
+lapin,10,3,57,3,19,0,1,-19,nuageux,1,0,jour,0,0,fuir
+lion,1,167,76,61,29,0,0,-18,pluie,0,2,jour,0,0,se cacher
+lapin,10,3,20,6,55,0,0,31,ensoleillé,0,0,nuit,0,0,se reposer
+ours,9,264,78,43,6,0,1,22,pluie,0,0,jour,0,0,explorer
+ours,2,244,39,48,31,0,0,34,vent,0,0,nuit,0,0,jouer / interagir
+lion,2,172,38,30,61,1,0,41,vent,0,3,jour,0,0,chercher de l'eau
+lapin,10,3,20,36,79,0,0,-5,pluie,3,0,jour,0,0,se cacher
+ours,9,286,18,83,87,1,0,-13,ensoleillé,0,0,nuit,1,0,chercher de l'eau
+lion,3,183,60,51,53,1,1,32,vent,0,1,jour,1,0,explorer
+lapin,4,3,88,42,32,1,0,-2,neige,1,0,jour,0,0,fuir
+lapin,8,3,13,36,62,1,1,-12,nuageux,0,0,jour,0,0,boire
+ours,8,258,18,75,59,1,1,41,ensoleillé,0,0,jour,0,0,chercher de la nourriture
+lion,7,227,61,2,18,1,0,18,pluie,0,1,nuit,1,1,se reproduire
+lapin,4,3,46,17,11,0,1,31,nuageux,1,0,jour,0,0,se cacher
+lion,1,158,62,22,46,1,1,35,vent,0,2,jour,0,0,explorer
+lapin,4,3,29,19,72,1,1,-14,neige,0,0,jour,0,0,boire
+lapin,8,3,21,45,72,0,0,9,ensoleillé,1,0,jour,1,0,se cacher
+lion,1,171,19,90,71,0,1,48,vent,0,2,nuit,0,0,boire
+ours,10,305,70,32,6,0,0,41,pluie,0,0,jour,1,1,se cacher
+lion,10,243,14,40,60,0,0,1,nuageux,0,1,nuit,0,0,se reposer
+lion,1,154,57,2,13,1,0,21,ensoleillé,0,2,jour,0,0,jouer / interagir
+ours,5,224,48,17,13,1,0,32,neige,0,0,nuit,1,1,se reposer
+lion,2,167,74,18,10,0,0,27,nuageux,0,2,jour,0,0,explorer
+lion,1,176,57,31,7,0,1,-11,ensoleillé,0,1,nuit,0,0,se cacher
+lapin,2,1,59,20,40,0,0,-19,pluie,1,0,jour,0,0,fuir
+ours,6,270,35,10,50,1,0,44,pluie,0,0,nuit,1,0,se cacher
+lapin,2,2,5,64,43,0,1,-5,vent,0,0,jour,0,0,chercher de la nourriture
+lapin,8,3,55,67,20,0,0,2,ensoleillé,0,0,nuit,0,0,se reposer
+ours,1,227,31,31,80,0,1,29,neige,0,0,jour,0,0,boire
+lapin,8,3,29,57,36,0,1,17,vent,0,0,jour,0,0,chercher de la nourriture
+lion,2,152,41,66,16,1,0,44,ensoleillé,0,1,jour,0,0,se cacher
+lapin,3,3,33,40,35,0,0,-13,pluie,3,0,jour,0,0,se cacher
+ours,1,230,42,70,69,0,0,37,vent,0,0,jour,0,0,jouer / interagir
+lapin,10,3,2,62,56,0,0,49,ensoleillé,1,0,nuit,0,0,se cacher
+ours,1,220,0,13,86,1,1,21,vent,0,0,nuit,0,0,mourir
+ours,10,312,27,28,6,0,1,16,vent,0,0,nuit,0,0,se reposer
+ours,9,296,2,63,22,0,1,24,nuageux,0,0,nuit,0,0,chercher de la nourriture
+lapin,4,3,17,58,83,1,0,4,neige,0,0,nuit,1,0,chercher de l'eau
+lion,2,153,48,52,44,0,0,45,pluie,0,3,jour,0,0,se cacher
+lion,6,206,98,37,5,1,1,7,ensoleillé,0,1,nuit,0,0,se reposer
+lapin,8,3,27,11,32,0,1,30,ensoleillé,2,0,nuit,0,0,se cacher
+lion,1,169,76,20,0,1,0,-3,pluie,0,2,nuit,0,0,se reposer
+lion,4,187,77,29,26,0,1,22,nuageux,0,0,nuit,0,0,se reposer
+lapin,4,3,83,43,18,0,0,-4,pluie,2,0,jour,0,0,fuir
+lion,6,200,26,11,1,1,0,38,neige,0,2,nuit,0,0,se reposer
+lion,3,180,21,4,87,0,0,42,vent,0,1,nuit,0,0,chercher de l'eau
+lion,3,192,58,62,0,1,0,49,pluie,0,3,jour,1,1,se cacher
+ours,5,247,62,6,22,1,1,16,pluie,0,0,nuit,1,1,se reproduire
+lion,8,228,58,38,70,1,0,3,ensoleillé,0,2,nuit,0,0,se reposer
+lapin,5,3,11,82,30,0,0,41,ensoleillé,1,0,jour,0,0,se cacher
+lapin,10,3,18,25,71,0,0,47,nuageux,0,0,jour,1,1,chercher de l'eau
+lapin,5,3,80,46,12,1,0,5,ensoleillé,1,0,nuit,1,0,fuir
+lapin,8,3,45,52,76,1,1,32,vent,2,0,nuit,0,0,se cacher
+lapin,8,3,70,23,44,0,0,-12,ensoleillé,1,0,nuit,0,0,fuir
+lapin,9,3,29,6,65,1,0,50,ensoleillé,0,0,nuit,1,1,chercher de l'eau
+lapin,1,2,28,14,32,0,1,45,nuageux,2,0,jour,0,0,se cacher
+lapin,5,3,86,20,12,0,0,7,pluie,1,0,nuit,0,0,fuir
+lapin,6,3,14,14,69,0,0,-14,pluie,0,0,nuit,0,0,chercher de l'eau
+lapin,7,3,83,43,33,0,1,30,ensoleillé,0,0,jour,0,0,jouer / interagir
+lion,7,202,17,4,44,1,0,1,nuageux,0,0,jour,0,0,se reposer
+lapin,1,2,4,70,55,0,1,40,ensoleillé,3,0,nuit,0,0,se cacher
+lion,10,262,97,3,2,0,0,28,vent,0,0,jour,0,0,explorer
+ours,2,219,37,32,13,0,1,41,neige,0,0,nuit,0,0,se cacher
+ours,3,259,35,47,73,0,1,-19,ensoleillé,0,0,nuit,0,0,boire
+lion,8,231,64,68,36,1,1,-1,neige,0,0,nuit,0,0,se reposer
+lapin,7,3,89,13,40,0,0,26,pluie,3,0,jour,0,0,fuir
+lion,7,201,0,13,90,0,0,17,neige,0,0,nuit,0,0,mourir
+ours,1,209,51,56,31,1,0,30,pluie,0,0,jour,0,0,dormir
+ours,10,278,37,19,13,1,0,50,ensoleillé,0,0,jour,0,0,se cacher
+lapin,3,2,10,56,87,1,1,32,pluie,2,0,nuit,0,0,se cacher
+lapin,2,1,42,36,44,1,0,-9,neige,1,0,jour,0,0,se cacher
+lapin,7,3,42,26,11,0,0,4,neige,0,0,jour,0,0,jouer / interagir
+ours,1,195,13,37,1,1,1,31,nuageux,0,0,nuit,0,0,se reposer
+lion,5,193,61,52,33,1,0,11,nuageux,0,0,jour,0,0,jouer / interagir
+ours,3,237,61,29,63,0,1,-6,vent,0,0,jour,0,0,jouer / interagir
+lion,7,212,26,11,14,1,1,-20,nuageux,0,2,nuit,0,0,se cacher
+lion,2,151,42,0,60,1,0,15,vent,0,0,nuit,0,0,se reposer
+lion,1,145,96,46,11,1,1,-13,pluie,0,0,nuit,0,0,se cacher
+lion,7,235,31,63,28,1,1,8,vent,0,0,nuit,0,0,se reposer
+ours,9,317,21,31,78,1,0,15,vent,0,0,jour,0,0,chercher de l'eau
+lion,4,191,2,96,77,1,1,37,pluie,0,3,jour,0,0,boire
+lapin,10,3,41,45,20,0,0,-1,neige,0,0,nuit,0,0,se reposer
+lion,5,219,95,2,16,1,1,36,pluie,0,2,jour,1,0,explorer
+lapin,5,3,67,27,49,0,0,8,vent,0,0,nuit,0,0,se reposer
+lapin,5,3,93,23,29,1,1,0,ensoleillé,2,0,nuit,0,0,fuir
+lion,10,263,15,60,79,1,0,25,pluie,0,0,jour,0,0,chercher de l'eau
+ours,2,205,96,43,47,1,0,45,nuageux,0,0,jour,0,0,se cacher
+lion,7,230,81,52,50,0,0,19,pluie,0,2,jour,1,1,jouer / interagir
+ours,10,315,0,63,40,1,1,29,pluie,0,0,jour,1,1,mourir
+ours,10,298,36,7,39,0,0,46,pluie,0,0,nuit,0,0,se cacher
+lion,2,158,95,16,34,0,0,11,vent,0,3,jour,0,0,dormir
+lapin,8,3,77,50,26,0,0,-6,ensoleillé,3,0,nuit,0,0,fuir
+lion,9,233,66,60,36,1,0,-9,vent,0,2,jour,0,0,explorer
+lion,3,193,38,16,34,1,1,1,ensoleillé,0,0,nuit,0,0,se reposer
+lion,10,242,90,46,9,0,1,2,nuageux,0,1,jour,1,1,explorer
+lapin,1,2,35,12,50,0,1,-3,neige,0,0,jour,0,0,se cacher
+lion,9,252,10,35,28,0,1,24,pluie,0,0,nuit,1,1,se reposer
+lapin,5,3,17,58,13,0,0,-16,ensoleillé,0,0,jour,0,0,chercher de la nourriture
+ours,4,262,20,67,85,0,1,32,ensoleillé,0,0,jour,0,0,boire
+lion,6,225,24,86,57,0,0,-17,nuageux,0,0,jour,1,1,chercher de la nourriture
+lapin,7,3,87,49,1,0,0,50,neige,1,0,jour,0,0,fuir
+ours,6,265,84,10,30,1,1,-16,ensoleillé,0,0,jour,0,0,dormir
+lion,1,172,69,5,57,1,0,-1,ensoleillé,0,3,jour,0,0,jouer / interagir
+lion,3,185,8,88,60,1,0,17,pluie,0,3,jour,0,0,chercher de la nourriture
+lapin,1,1,36,8,15,0,0,-13,vent,3,0,jour,0,0,se cacher
+lion,7,228,33,16,76,1,0,-20,neige,0,3,jour,1,1,chercher de l'eau
+lapin,7,3,56,10,59,0,1,-20,nuageux,2,0,nuit,1,1,fuir
+ours,3,238,88,32,18,1,1,19,pluie,0,0,nuit,0,0,se reposer
+lion,4,180,56,12,24,1,1,16,ensoleillé,0,1,nuit,1,1,se reposer
+lion,9,232,42,1,79,0,0,2,ensoleillé,0,0,nuit,1,0,se reposer
+ours,9,310,63,19,43,1,0,9,neige,0,0,nuit,0,0,se reposer
+ours,5,274,43,36,73,1,0,22,vent,0,0,jour,0,0,jouer / interagir
+lion,5,215,93,16,28,1,1,8,pluie,0,0,nuit,0,0,se reposer
+lapin,9,3,38,14,27,1,1,13,ensoleillé,2,0,jour,0,0,se cacher
+lapin,10,3,0,21,76,0,1,13,nuageux,2,0,nuit,1,0,mourir
+lapin,7,3,62,40,54,0,0,39,neige,3,0,nuit,0,0,fuir
+lion,7,233,43,44,7,0,0,26,pluie,0,3,nuit,0,0,se reposer
+lion,3,182,17,50,4,0,0,-17,vent,0,3,jour,1,1,se cacher
+lapin,3,2,41,2,44,0,1,31,nuageux,0,0,nuit,0,0,se reposer
+lion,7,222,95,48,25,0,0,-13,vent,0,3,jour,1,1,se cacher
+lion,1,141,30,31,70,0,1,-17,pluie,0,0,nuit,0,0,boire
+lapin,4,3,16,87,67,1,1,34,pluie,1,0,jour,1,1,se cacher
+ours,3,233,61,69,11,1,0,45,vent,0,0,jour,0,0,se cacher
+lion,2,185,36,58,39,0,0,7,vent,0,1,jour,0,0,dormir
+lion,1,174,49,23,33,1,0,39,nuageux,0,2,jour,0,0,jouer / interagir
+lion,4,201,85,8,13,1,0,27,vent,0,0,jour,1,0,explorer
+lapin,3,2,99,51,18,1,0,-13,ensoleillé,0,0,jour,0,0,se cacher
+lion,3,162,92,22,21,0,1,35,nuageux,0,2,nuit,1,1,se reproduire
+lapin,4,3,1,63,50,1,0,41,pluie,3,0,nuit,0,0,se cacher
+lion,2,175,77,37,53,1,1,45,neige,0,0,nuit,0,0,se cacher
+lion,3,190,3,2,21,1,0,14,nuageux,0,2,jour,0,0,se reposer
+lapin,1,1,99,39,48,1,1,50,neige,1,0,nuit,0,0,fuir
+lion,5,215,36,3,8,0,0,18,neige,0,0,jour,0,0,dormir
+lion,2,174,85,57,19,1,0,34,neige,0,0,nuit,0,0,se reposer
+lapin,4,3,27,40,58,1,1,6,nuageux,2,0,nuit,0,0,se cacher
+ours,8,276,85,12,19,1,1,47,pluie,0,0,nuit,0,0,se cacher
+lapin,9,3,46,34,1,1,1,-18,ensoleillé,0,0,nuit,0,0,se cacher
+lion,4,176,0,60,50,0,1,-17,pluie,0,3,jour,0,0,mourir
+lapin,5,3,15,36,39,1,0,-8,vent,3,0,jour,1,0,se cacher
+ours,2,199,61,48,38,0,1,37,nuageux,0,0,jour,0,0,jouer / interagir
+lion,4,185,71,37,60,0,1,42,vent,0,1,nuit,0,0,se cacher
+ours,10,299,14,67,52,0,1,16,pluie,0,0,nuit,0,0,chercher de la nourriture
+lion,5,189,64,12,25,0,1,50,vent,0,1,nuit,1,0,se cacher
+lapin,3,2,31,29,64,0,1,-16,neige,0,0,jour,0,0,boire
+lapin,2,2,78,4,52,0,0,46,pluie,3,0,jour,0,0,fuir
+lapin,4,3,23,67,41,0,0,14,nuageux,2,0,nuit,0,0,se cacher
+lapin,6,3,26,81,66,0,0,-17,pluie,0,0,jour,0,0,chercher de l'eau
+lion,5,205,25,34,67,0,0,-4,nuageux,0,3,nuit,1,0,chercher de l'eau
+lapin,4,3,0,61,12,0,1,17,nuageux,1,0,nuit,0,0,mourir
+lapin,1,1,44,54,32,0,1,20,vent,0,0,nuit,0,0,se reposer
+ours,2,224,31,40,66,1,0,39,vent,0,0,nuit,0,0,chercher de l'eau
+lion,9,254,48,47,35,0,1,-4,vent,0,0,jour,0,0,dormir
+ours,1,197,7,73,20,1,1,25,neige,0,0,jour,0,0,chercher de la nourriture
+lapin,9,3,0,9,92,1,1,48,ensoleillé,0,0,nuit,1,1,mourir
+lion,4,182,7,24,49,1,0,-20,neige,0,1,jour,1,1,se cacher
+lapin,2,1,14,89,2,1,1,13,neige,0,0,jour,0,0,manger
+ours,9,296,49,59,15,0,0,47,neige,0,0,jour,0,0,se cacher
+lion,3,172,49,62,62,0,0,7,pluie,0,0,jour,0,0,dormir
+ours,8,296,39,50,27,0,0,-19,neige,0,0,jour,1,0,jouer / interagir
+lapin,8,3,75,59,13,1,0,-4,pluie,1,0,jour,0,0,fuir
+ours,1,185,24,76,71,0,0,22,vent,0,0,jour,0,0,chercher de l'eau
+lapin,8,3,34,58,47,1,0,-10,vent,0,0,jour,0,0,se cacher
+lion,5,219,43,55,26,1,0,-19,neige,0,2,nuit,0,0,se cacher
+ours,2,243,29,52,24,0,0,8,ensoleillé,0,0,jour,0,0,chercher de la nourriture
+lion,4,178,91,13,39,0,0,5,nuageux,0,0,nuit,0,0,jouer / interagir
+lion,2,156,32,48,12,1,0,2,vent,0,0,nuit,0,0,se reposer
+lapin,2,2,69,15,44,0,0,46,vent,0,0,jour,0,0,se cacher
+ours,8,265,57,2,56,0,1,-9,neige,0,0,nuit,0,0,explorer
+lion,4,207,34,7,48,1,0,22,ensoleillé,0,2,nuit,1,1,se reposer
+ours,5,269,16,74,87,1,1,12,neige,0,0,jour,1,1,boire
+lion,9,254,25,75,36,1,1,-13,nuageux,0,0,nuit,0,0,chercher de la nourriture
+lapin,9,3,35,19,55,0,0,-20,ensoleillé,0,0,jour,0,0,se cacher
+lapin,7,3,88,37,40,0,0,25,nuageux,2,0,nuit,0,0,fuir
+ours,7,257,9,33,50,0,0,9,nuageux,0,0,nuit,0,0,se reposer
+ours,6,267,42,49,51,1,1,14,pluie,0,0,nuit,0,0,se reposer
+ours,3,248,28,42,78,1,0,9,ensoleillé,0,0,nuit,0,0,chercher de l'eau
+ours,7,274,63,28,35,0,0,13,vent,0,0,nuit,1,1,se reproduire
+lion,2,150,55,35,63,1,1,1,neige,0,3,jour,0,0,jouer / interagir
+lion,9,226,90,26,48,1,0,30,pluie,0,3,nuit,1,0,se reposer
+lapin,1,1,56,31,21,0,0,31,nuageux,2,0,nuit,0,0,fuir
+lapin,4,3,40,10,14,0,0,-9,vent,2,0,jour,1,0,se cacher
+ours,4,266,89,17,0,1,0,16,ensoleillé,0,0,nuit,0,0,se reposer
+lapin,7,3,62,16,3,0,0,41,nuageux,1,0,nuit,1,1,fuir
+ours,6,256,76,62,16,0,0,-10,nuageux,0,0,nuit,1,1,se reposer
+ours,4,242,46,29,17,0,0,2,ensoleillé,0,0,nuit,0,0,se reposer
+ours,10,319,78,36,47,0,1,17,neige,0,0,nuit,1,1,se reposer
+lion,3,191,83,37,34,0,1,9,nuageux,0,3,jour,1,0,explorer
+lapin,5,3,18,44,45,1,0,10,pluie,3,0,jour,0,0,se cacher
+lion,5,206,34,29,51,0,0,25,nuageux,0,1,nuit,0,0,se reposer
+lapin,2,1,25,70,26,0,0,24,nuageux,0,0,jour,0,0,chercher de la nourriture
+ours,8,270,43,9,18,0,1,32,vent,0,0,nuit,0,0,se reposer
+ours,8,251,45,7,12,1,1,37,ensoleillé,0,0,nuit,0,0,jouer / interagir
+ours,5,265,41,17,76,1,1,37,ensoleillé,0,0,nuit,1,0,se reposer
+lion,6,193,55,68,51,1,1,-6,ensoleillé,0,0,nuit,0,0,se reposer
+ours,7,258,3,8,16,1,1,24,nuageux,0,0,nuit,0,0,se reposer
+ours,9,288,59,56,21,0,1,38,ensoleillé,0,0,jour,1,1,dormir
+lapin,5,3,28,35,11,1,1,-15,vent,1,0,nuit,0,0,se cacher
+lapin,7,3,17,87,51,1,0,49,nuageux,2,0,nuit,1,1,se cacher
+ours,7,295,74,53,17,0,1,-3,neige,0,0,nuit,0,0,se reposer
+lion,7,233,58,25,27,1,0,-6,vent,0,2,jour,1,0,dormir
+lapin,4,3,55,64,48,1,1,4,ensoleillé,1,0,nuit,0,0,fuir
+lion,4,181,45,70,28,0,0,43,ensoleillé,0,2,nuit,0,0,se cacher
+lapin,6,3,90,46,16,1,0,41,neige,2,0,jour,0,0,fuir
+ours,6,239,29,28,86,1,0,18,neige,0,0,jour,0,0,chercher de l'eau
+lion,1,144,98,16,23,0,0,30,nuageux,0,3,jour,0,0,explorer
+lion,2,179,44,3,25,0,0,28,vent,0,3,nuit,0,0,dormir
+lion,5,196,67,31,67,0,0,-3,nuageux,0,2,nuit,0,0,jouer / interagir
+lion,3,189,62,58,43,1,0,-7,neige,0,3,jour,0,0,jouer / interagir
+lapin,4,3,58,0,41,0,0,43,pluie,3,0,nuit,0,0,fuir
+lapin,5,3,67,31,13,1,1,18,pluie,0,0,jour,0,0,se cacher
+lion,5,186,62,67,7,0,0,-16,ensoleillé,0,1,jour,1,0,se cacher
+lapin,2,1,30,47,80,0,1,36,vent,1,0,jour,0,0,se cacher
+lapin,4,3,24,27,55,1,0,-10,vent,2,0,jour,1,1,se cacher
+lion,5,213,92,20,19,1,1,45,pluie,0,1,jour,0,0,se cacher
+ours,7,284,64,12,26,0,0,23,pluie,0,0,jour,0,0,explorer
+lapin,10,3,44,40,60,1,0,27,ensoleillé,2,0,nuit,0,0,se cacher
+lapin,9,3,52,63,29,1,0,32,vent,0,0,jour,0,0,jouer / interagir
+lion,4,210,60,55,30,0,1,2,pluie,0,1,nuit,1,1,se reposer
+ours,10,284,70,17,62,0,1,-14,vent,0,0,jour,1,0,dormir
+ours,9,312,5,88,54,0,0,13,ensoleillé,0,0,jour,1,1,chercher de la nourriture
+ours,7,290,84,49,9,0,0,25,neige,0,0,nuit,1,1,explorer
+ours,5,246,71,36,19,1,1,-13,neige,0,0,nuit,1,0,chercher un partenaire
+lion,10,237,0,79,92,1,1,-5,nuageux,0,1,nuit,1,0,mourir
+lion,10,255,6,37,36,0,0,-1,nuageux,0,2,nuit,0,0,se reposer
+lapin,7,3,69,23,45,0,1,29,nuageux,1,0,jour,0,0,fuir
+lapin,3,3,19,89,50,1,0,20,pluie,1,0,nuit,1,0,se cacher
+lion,10,259,59,30,4,0,0,5,neige,0,2,nuit,0,0,se reposer
+lapin,7,3,81,25,5,0,1,29,pluie,3,0,jour,0,0,fuir
+lion,8,236,87,26,12,0,0,6,nuageux,0,0,nuit,1,0,chercher un partenaire
+lion,8,223,4,86,39,0,1,-2,neige,0,0,nuit,0,0,chercher de la nourriture
+ours,6,239,12,56,78,1,1,40,ensoleillé,0,0,jour,0,0,boire
+lapin,2,1,66,6,67,0,1,-18,nuageux,0,0,jour,0,0,se cacher
+ours,1,201,38,70,14,0,0,48,nuageux,0,0,nuit,0,0,se cacher
+lion,2,150,25,41,18,1,0,34,nuageux,0,0,nuit,0,0,se reposer
+lapin,10,3,54,51,68,0,1,-12,vent,3,0,jour,1,0,fuir
+lapin,4,3,9,25,5,1,1,5,neige,3,0,nuit,0,0,se cacher
+ours,10,294,55,54,11,1,1,-12,vent,0,0,nuit,1,1,se reposer
+lapin,8,3,50,7,3,0,0,-4,nuageux,1,0,nuit,0,0,se cacher
+ours,2,219,96,31,9,1,0,-7,vent,0,0,jour,0,0,dormir
+lion,2,189,55,46,53,1,1,41,pluie,0,1,jour,0,0,se cacher
+lion,6,197,62,4,51,0,0,-11,nuageux,0,2,nuit,1,0,se cacher
+ours,10,297,97,34,11,1,0,45,vent,0,0,nuit,0,0,se cacher
+lapin,2,1,3,65,4,0,0,21,pluie,3,0,nuit,0,0,se cacher
+lapin,3,3,52,21,38,1,0,17,neige,0,0,nuit,1,1,se reposer
+lion,10,256,2,55,17,1,0,45,ensoleillé,0,0,nuit,0,0,chercher de la nourriture
+lion,9,253,72,35,57,1,1,0,neige,0,1,nuit,0,0,se reposer
+ours,9,262,80,24,9,1,1,-13,pluie,0,0,nuit,0,0,se reposer
+ours,8,298,30,13,75,0,1,37,nuageux,0,0,jour,0,0,boire
+lion,6,200,23,51,72,0,0,24,ensoleillé,0,1,jour,1,1,chercher de l'eau
+lapin,9,3,1,81,60,0,0,5,vent,1,0,nuit,0,0,se cacher
+lapin,7,3,3,41,89,0,0,24,pluie,1,0,jour,0,0,se cacher
+lapin,4,3,92,5,32,1,1,-18,neige,1,0,jour,0,0,fuir
+ours,3,248,22,62,81,1,0,17,pluie,0,0,nuit,0,0,chercher de l'eau
+ours,1,217,15,55,29,1,0,25,ensoleillé,0,0,nuit,0,0,chercher de la nourriture
+lapin,5,3,33,21,31,1,0,-17,nuageux,0,0,nuit,0,0,se cacher
+lapin,1,1,29,29,23,0,0,10,ensoleillé,1,0,nuit,0,0,se cacher
+lion,7,239,78,58,49,0,0,-1,neige,0,0,nuit,0,0,se reposer
+lapin,10,3,41,42,31,0,0,8,neige,0,0,jour,0,0,explorer
+lion,2,151,47,18,7,1,0,-5,pluie,0,0,nuit,0,0,se reposer
+lion,3,192,10,70,74,0,1,-5,neige,0,1,nuit,0,0,boire
+ours,7,283,40,14,57,1,0,44,nuageux,0,0,nuit,0,0,se cacher
+lapin,9,3,96,29,2,1,1,36,pluie,0,0,nuit,0,0,se reposer
+lapin,1,2,16,66,89,0,1,14,nuageux,3,0,jour,0,0,se cacher
+lapin,9,3,69,13,6,0,1,19,nuageux,2,0,nuit,1,0,fuir
+ours,5,245,42,69,13,0,1,-1,nuageux,0,0,jour,0,0,explorer
+lapin,2,1,89,13,55,0,1,21,vent,2,0,nuit,0,0,fuir
+ours,3,215,53,45,33,1,0,42,nuageux,0,0,nuit,1,0,se cacher
+ours,9,304,59,21,68,1,1,29,nuageux,0,0,jour,0,0,dormir
+lapin,7,3,33,24,11,1,0,13,ensoleillé,2,0,jour,0,0,se cacher
+ours,8,255,96,50,45,0,1,-8,neige,0,0,nuit,1,1,se reposer
+lion,9,230,21,17,44,0,0,14,ensoleillé,0,0,nuit,1,1,se reposer
+lapin,6,3,84,31,7,0,0,6,ensoleillé,1,0,jour,0,0,fuir
+lapin,8,3,32,49,54,1,1,-7,nuageux,1,0,nuit,1,1,se cacher
+lapin,5,3,39,29,43,0,0,-7,vent,0,0,jour,1,0,jouer / interagir
+ours,3,251,9,68,13,1,0,39,pluie,0,0,jour,0,0,chercher de la nourriture
+ours,6,286,1,10,84,0,0,-7,pluie,0,0,jour,0,0,chercher de l'eau
+ours,8,292,78,29,29,0,1,-18,pluie,0,0,nuit,1,1,se reproduire
+ours,10,298,0,22,75,1,1,-7,ensoleillé,0,0,jour,0,0,mourir
+lapin,8,3,92,38,27,0,1,23,nuageux,0,0,nuit,1,1,se reproduire
+ours,1,213,70,28,22,1,0,2,ensoleillé,0,0,nuit,0,0,se reposer
+lion,5,206,34,51,72,0,1,17,pluie,0,1,jour,1,1,boire
+ours,10,280,28,54,12,1,1,25,vent,0,0,jour,0,0,chercher de la nourriture
+ours,3,252,33,37,71,1,0,8,ensoleillé,0,0,jour,1,1,chercher de l'eau
+ours,3,234,99,23,14,0,0,47,vent,0,0,nuit,0,0,se cacher
+lion,9,258,45,69,70,0,0,21,neige,0,1,jour,0,0,explorer
