@@ -33,17 +33,14 @@ def determine_decision(animal, faim, soif, energie, nourriture, eau, predateurs,
     
     # 4. Besoins physiologiques (fusion boire/manger)
     
-    if faim > 75.00 or (faim > 50.00 and random.random() < 0.6):
+    if faim > 75.00 or soif >60:
        
-        if nourriture == 1:
+        if nourriture ==1 or eau>0:
             return "satisfaire besoin"
         elif animal in ["lion", "ours"]:
             return "chasser"
         else:
             return "chercher ressources"
-        
-    if soif > 80.00 or (soif > 60.00 and random.random() < 0.7):
-        return "satisfaire besoin" if eau or nourriture ==1 else "chercher ressources"
     
     # 5. Fatigue
     if energie < 30 or (temps < 6 and temps > 6 and energie < 70):
